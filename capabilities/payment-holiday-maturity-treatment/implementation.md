@@ -9,7 +9,7 @@ Platform evidence commit SHA: `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`
 
 ## Scope and blockers
 Draft discussion scope only: [requirements.md](requirements.md).
-D-001 confirms the task; D-002–D-019 confirm initial scope and treatment. FR-001–FR-033 and BR-001–BR-014 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
+D-001 confirms the task; D-002–D-020 confirm initial scope and treatment. FR-001–FR-034 and BR-001–BR-016 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
 Blocking questions: Q-001–Q-007 in [decisions.md](decisions.md).
 Do not implement a holiday policy from this draft.
 
@@ -18,6 +18,8 @@ Confirmed exclusion: Do not implement post-commencement holiday changes or cance
 D-015 fixes the maximum duration at six months. Do not assume six months equals 180 days. D-016 fixes one to six consecutive monthly instalments and requires at least one later scheduled repayment by unchanged maturity. D-019 fixes the pause from first deferred due date through the day before repayments resume, inclusive. Business-day/date selection, same-day processing order and validation responses remain to establish.
 
 D-017 allows voluntary payments during the holiday under the current allocation rules applicable to the loan. Investigate and reference those exact rules at a recorded platform commit. Do not infer a new waterfall, interest bucket priority, automatic reschedule or holiday cancellation from receipt of a payment. Holiday-specific allocation is future consideration only. D-018 requires balance/forecast updates with no automatic contractual schedule recalculation; an explicit reschedule is required to change contractual obligations. This does not bring the post-start holiday amendments deferred by D-013 into scope.
+
+D-020 requires ordinary interest on outstanding principal only and prohibits interest on unpaid holiday interest, including after the holiday. Keep the separate holiday-interest balance outside the accrual base; verify both actual COB and forecast use the same agreed economics. Do not treat this as a change to unrelated future component products.
 
 ## Existing mappings and constraints
 BHV-008 is the Payment Holiday identifier in the expert backlog, not a locked current graph entry.
@@ -50,6 +52,7 @@ When approved, create the platform execution brief and numbered tickets under .s
 | Duration and near-maturity eligibility | EX-003/020–EX-023 | D-015/D-016 product decisions; no executed tests | Count validation, month-end calendar dates, remaining repayment and error responses |
 | Voluntary holiday payments | EX-024/025 | D-017/D-018 product decisions; no executed tests | Allocation/interest mapping, cleared arrears, updated forecast and unchanged contractual rows/version |
 | Calendar-day holiday coverage | EX-026 | D-019 product decision; no executed tests | Inclusive start/end, resumed-date exclusion, variable month lengths and same-day order |
+| Interest base and no compounding | EX-027 | D-020 product decision; no executed tests | Actual accrual, forecast base, repayment of separate holiday interest and numerical fixtures |
 | Replay/regression | EX-006/007 | Existing invariants (E-008) | Fixed baseline fixtures and executed outcomes |
 
 No application tests executed. No delivered acceptance.
