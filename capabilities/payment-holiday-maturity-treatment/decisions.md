@@ -32,6 +32,8 @@
 
 | D-017 | Are voluntary payments permitted during a holiday, and how are they allocated? | Allow voluntary payments during the holiday using the current payment-allocation rules applicable to the loan. Holiday-specific allocation rules are possible future scope, not part of the initial release. | Andrew confirmed reuse of current allocation rather than introducing a special holiday waterfall. Verify the actual applicable rules and their treatment of separately accrued holiday interest; do not invent bucket precedence. | Andrew / 22 October 2026 | FR-027/028; BR-012; EX-024 | Confirmed |
 
+| D-018 | Does a voluntary holiday payment change the approved contractual schedule automatically? | Update balances and the forward forecast after a voluntary payment. Keep the approved contractual schedule unchanged unless an explicit reschedule is performed. | Andrew accepted separating payment-driven projections from agreed contractual obligations. This does not add a post-start holiday amendment workflow excluded by D-013. | Andrew / 22 October 2026 | FR-029–FR-031; BR-013; EX-024/025 | Confirmed |
+
 These are confirmed decisions, not acceptance of the full specification. The spreading and equal-total-payment approach is confirmed; detailed calculation, allocation order, configuration level, repeated-request responses and exact date boundaries remain unresolved. D-011 confirms effectiveness at holiday commencement. D-007 confirms creation of a new contractual version on approval.
 
 ## Question resolution and remaining decisions
