@@ -1,0 +1,32 @@
+# Requirements to implementation
+
+## Authority
+Product requirements are authored here. Existing platform ADRs, vocabulary and specifications remain evidence and constraints; graph links are navigation. Do not migrate or rewrite all existing specifications as part of a new capability.
+A newly agreed change that conflicts with an existing ADR must identify the conflict and the required amendment or supersession. The implementation agent must not silently choose precedence.
+
+## 1. Discover and agree
+Create the capability records from templates. Investigate the relevant platform version and record evidence. Resolve material questions with Andrew. Reference existing BHV/RULE/INV IDs only after checking their sources.
+Use Draft → In review → Ready for engineering for requirements. Ready requires explicit acceptance by Andrew, dated and scoped, with no unresolved material decisions for that scope. Deferred work must be explicit.
+
+## 2. Freeze the handoff
+Commit and push accepted requirements, decisions and examples. Record that full requirements commit SHA and immutable file URLs in implementation.md in a later commit. Record the platform evidence SHA separately.
+Specify included FR/BR/EX IDs, exclusions, dependencies, affected existing rules, ADR changes needed and validation expectations. Access failure or a missing approval is a visible blocker.
+If requirements change after handoff, create a new baseline and identify affected tickets, tests and implementation work; never silently replace the approved baseline.
+
+## 3. Implement in loan-admin-platform
+Give the implementation agent the pinned requirements link, capability path and platform evidence commit. It reads the platform AGENTS.md and relevant current context, ADRs, graph, tickets and code.
+Check differences since the evidence commit. Pause affected work if new findings invalidate a requirement or expose a material unresolved decision.
+Follow the platform's local tracker: .scratch/<feature-slug>/spec.md and separate numbered issues/<NN>-<slug>.md. The local spec references the requirements baseline and contains execution-specific context. Keep reports under reports/. GitHub issues are optional links when explicitly requested; they do not replace the current local tracker by assumption.
+Plan, implement, review and test under platform rules. Add @verifies() mappings for known behaviours/invariants as required there. Never hand-edit .cockpit/generated/*.
+Requirements approval is not permission to merge or deploy.
+
+## 4. Verify and close the loop
+Map each included FR and BR to the relevant acceptance examples and implementation/test evidence. Record exact platform commit, PR, commands, results, environment, known failures and gaps. A passing suite alone is not proof that every acceptance example is covered.
+Keep requirement readiness separate from delivery state:
+- Not started: no implementation evidence.
+- In progress: work underway.
+- Implemented: code exists; verification may remain.
+- Verified: scoped acceptance evidence is recorded, including disclosed limitations.
+- Accepted: Andrew explicitly accepts the delivered scope.
+Use Blocked when necessary and explain the blocker. Do not fabricate a PR, approval or test run.
+Update implementation.md, checkpoint.md and the capability index with actual references. Product behaviour changes discovered during implementation return to the decision process here.

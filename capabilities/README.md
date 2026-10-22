@@ -1,7 +1,7 @@
 # Capability index
 
-| Capability | Status | Owner | Next decision | Folder |
-| --- | --- | --- | --- | --- |
-| No active capability | — | — | Select the first change | — |
+| Capability / folder | Requirements status | Owner | Next decision | Baseline / handoff | Delivery state / platform references |
+| --- | --- | --- | --- | --- | --- |
+| No active capability | — | Andrew | Select first change | — | Not started |
 
-Create active folders from `../templates/capability/`. The example is not an active requirement.
+Create folders from ../templates/capability/. Each contains requirements.md, decisions.md, checkpoint.md and implementation.md. Examples are fictional, not active requirements. Keep requirement readiness and delivered acceptance separate.

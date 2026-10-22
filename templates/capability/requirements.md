@@ -34,3 +34,8 @@ Condition → response and observable state effect. To establish.
 
 ## Open decisions and readiness
 Reference open Q IDs. No material behaviour is yet confirmed. Status remains Draft.
+
+## Implementation linkage
+Target repository: AndrewMill84/loan-admin-platform
+Handoff, pinned baseline, coverage and delivery state: [implementation.md](implementation.md)
+Existing behaviour / rule IDs: Identify from platform sources; do not invent mappings.

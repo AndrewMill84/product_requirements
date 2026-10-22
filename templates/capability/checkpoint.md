@@ -21,3 +21,7 @@ Next example to explore: To select.
 
 ## Files changed and validation
 None yet. Distinguish review of examples from execution of application tests.
+
+## Delivery handover
+Requirements baseline / platform evidence SHA: Not pinned
+Implementation state and next action: See [implementation.md](implementation.md).
