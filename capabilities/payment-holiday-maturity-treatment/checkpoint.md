@@ -23,3 +23,6 @@ Concrete recommendations are in the review. Do not reopen term extension, capita
 No application/runtime/UI tests executed; source and test-definition inspection only. No local application environment was present.
 Documentation IDs/links and remote saved contents are checked during writeback.
 Requirements remain Draft, not accepted, not Ready for engineering and not pinned as an accepted implementation baseline. See [implementation.md](implementation.md). After decisions: complete money examples, obtain explicit final acceptance, then freeze a requirements commit.
+
+## Process learning
+Earlier reconciliation and grouped questions would have reduced repeated discussion. Resume with the four decision groups in [the review](reconciliation-review.md). Use one end-to-end scenario to check their interaction. Do not reopen confirmed policies.

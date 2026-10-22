@@ -49,3 +49,13 @@ An implementation agent must read the pinned capability records and the platform
 Keep the platform's .scratch ticket convention; a linked implementation spec is a scoped execution brief referencing the pinned requirements, not a second editable copy of product rules.
 Record implementation PRs, commits, tests and requirement coverage after delivery. Ready, implemented, verified and product-accepted are different states; never infer any of them from another.
 Do not edit the platform repository merely to prepare requirements. Implementation needs a task authorising that work.
+
+## Keep discovery efficient
+- Investigate relevant code, tests and constraints before detailed product questions.
+- Group related decisions and explain their consequences using one end-to-end example.
+- Identify interactions between confirmed decisions early.
+- Periodically summarise what is settled, what remains and what blocks readiness.
+- Keep requirements concise. Store rationale in decisions and investigation in the review; link rather than repeat.
+- Reconcile the draft during discovery, not only at the end.
+- Separate product decisions, implementation gaps and validation evidence.
+- Recommend an option with its tradeoff; do not turn recommendations into assumed requirements.
