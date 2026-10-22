@@ -12,7 +12,7 @@ Outcome: Define how a payment holiday changes expected collections, interest and
 
 Confirmed task: Prepare requirements for the recommended capability, using the Loan Domain Expert workflow (D-001).
 
-Confirmed first slice (D-002): One future holiday on a fixed-rate equal-instalments (ANNUITY) loan. Interest accrues separately (D-003). Repayments increase afterwards and the term stays unchanged (D-004). Holiday interest is spread across remaining post-holiday repayments; total repayments are equal, subject to a final rounding adjustment (D-006). Approval creates a new contractual schedule version and preserves the original for history (D-007). Detailed eligibility and API/operator outputs remain to confirm.
+Confirmed first slice (D-002): One future holiday on a fixed-rate equal-instalments (ANNUITY) loan. Interest accrues separately (D-003). Repayments increase afterwards and the term stays unchanged (D-004). Holiday interest is spread across remaining post-holiday repayments; total repayments are equal, subject to a final rounding adjustment (D-006). Approval creates a new contractual schedule version and preserves the original for history (D-007). Operational DPD excludes holiday days and resumes afterwards for remaining overdue obligations; no separate total-days-overdue measure is added (D-008). Detailed eligibility and API/operator outputs remain to confirm.
 
 Future consideration (D-005): Term extension and final residual-payment policies may be added later. This does not require implementing configuration or alternative strategies now.
 
@@ -45,6 +45,10 @@ The following obligations record confirmed product decisions. The complete capab
 | FR-007 | The system must calculate equal total post-holiday repayments, subject to a final rounding adjustment. | D-006 |
 | FR-008 | The system must create a new contractual schedule version when the payment holiday is approved. | D-007 |
 | FR-009 | The system must preserve the original contractual schedule version for historical reference. | D-007 |
+| FR-010 | The system must exclude approved payment-holiday days from operational DPD ageing. | D-008 |
+| FR-011 | The system must resume operational DPD ageing after the holiday for obligations that remain overdue. | D-008 |
+| FR-012 | The system must recalculate operational DPD when payments clear the oldest overdue obligation. | D-008 |
+| FR-013 | The system must prevent holiday-deferred instalments from adding operational DPD during the approved holiday. | D-008 |
 
 | ID | Business rule | Decision |
 | --- | --- | --- |
@@ -52,6 +56,7 @@ The following obligations record confirmed product decisions. The complete capab
 | BR-002 | Term extension and a final residual-payment strategy are outside the initial treatment. | D-004/D-005 |
 | BR-003 | The spreading calculation must retain holiday-accrued interest separately from principal. | D-003/D-006 |
 | BR-004 | Creating the holiday schedule version must not overwrite the original contractual schedule. | D-007 |
+| BR-005 | This capability uses operational DPD only; it must not introduce a separate total-calendar-days-overdue measure. | D-008 |
 
 Spreading is confirmed; the allocation order within each repayment, exact calculation and compound-interest policy remain unresolved. Do not infer that equal total repayments require equal deferred-interest components.
 
@@ -68,7 +73,7 @@ The following remaining candidates are recommendations for discussion; confirmed
 | P-007 | Apply cancellation before commencement and repeat requests without unintended financial effects. | Q-006/Q-007 |
 | P-008 | Preserve historical records and reproduce agreed outcomes on replay. | Q-004/Q-005; existing platform constraints E-008 |
 
-As remaining decisions are confirmed, promote only unresolved candidate details into additional atomic FR/BR statements, linked to decision IDs. FR-001–FR-009 and BR-001–BR-004 already record confirmed policy. Do not relabel candidates as confirmed merely because a draft is committed.
+As remaining decisions are confirmed, promote only unresolved candidate details into additional atomic FR/BR statements, linked to decision IDs. FR-001–FR-013 and BR-001–BR-005 already record confirmed policy. Do not relabel candidates as confirmed merely because a draft is committed.
 
 ## Business rules and dependencies
 
@@ -82,7 +87,7 @@ Material choices still open: detailed eligibility and scope boundaries; allocati
 | --- | --- |
 | Holiday includes final contractual due date; no scheduled rows remain afterwards | Q-003/Q-006: decide eligibility or rejection when no post-holiday dates remain; do not assume extension or a residual-payment policy |
 | Recalculated repayment cannot satisfy the unchanged maturity or exceeds an agreed limit | Q-003/Q-006: agree feasibility limits and failure response without extending the term |
-| Existing arrears when holiday begins | Q-005: eligibility, pre-existing debt and DPD treatment |
+| Existing arrears when holiday begins | D-008 fixes DPD pause/resume. Q-005/Q-006 still govern eligibility, monetary debt and penalties. |
 | Inverted/overlapping window or a date that is not a due date | Q-006: preserve or change documented validation explicitly |
 | Duplicate submission or cancellation before commencement | Q-007: replay/conflict and cancellation response |
 | Change after commencement or concurrent modification | Q-001/Q-007: supported scope, deferral or rejection |
@@ -97,16 +102,19 @@ Use one fixed source schedule, business date, product snapshot and opening balan
 | EX-002 | Same fixture with interest disabled in holiday request. | D-003 requires separate accrual for this initial treatment. Whether an incompatible request is rejected or the field is unavailable remains Q-006; it must not silently select a different policy. | Q-002/Q-005 |
 | EX-003 | Holiday covers the final contractual due date. | No term extension or residual-payment strategy is selected. Decide whether this boundary is ineligible when no recovery dates remain; exact response and modification record remain open. | Q-003/Q-004 |
 | EX-004 | Confirmed future holiday is cancelled before it starts. | Unresolved: resulting schedule, record and repeat-cancellation response. | Q-007 |
-| EX-005 | Account already has overdue interest when holiday is requested. | Unresolved: eligibility and old versus new shortfalls, DPD and penalties. | Q-005/Q-006 |
+| EX-005 | Account already has overdue interest when holiday is requested. | Operational DPD pauses during an approved holiday and resumes afterwards for remaining overdue obligations. Eligibility, monetary arrears and penalties remain unresolved. | Q-005/Q-006 remaining details |
 | EX-006 | Same confirmed event history is replayed. | Existing constraint INV-004 expects reproducibility; holiday-specific numerical oracle depends on confirmed rules. | Q-002–Q-005 |
 | EX-007 | Ordinary annuity account has no holiday. | Compare pre/post-change outputs at a fixed baseline; no new policy should leak into this control case. Specific regression oracle to capture during implementation. | Confirmed scope and baseline |
 | EX-008 | Holiday interest is 120.00 and ten post-holiday repayments remain. | Recover 120.00 across those repayments, separately from principal. Total repayments are equal except for final rounding. Do not assume each deferred-interest component is 12.00 until the allocation rule is agreed. | Q-002/Q-003 exact calculation and allocation |
-
 | EX-009 | A future holiday is approved for an account with an existing contractual schedule. | Create a new contractual version reflecting agreed holiday repayment treatment; retain the original unchanged for history. Version effective date and cancellation consequences remain open. | Q-004 lifecycle details |
 
-Review status: Designed as discussion cases; no application tests executed and no numerical outcomes approved.
+| EX-010 | Operational DPD is 15 at holiday entry. Thirty holiday days elapse; the same oldest obligation remains unpaid. | Operational DPD remains 15 throughout the holiday. No separate total-calendar-days-overdue measure is introduced. | Q-006 exact holiday boundary/day ordering |
+| EX-011 | EX-010 holiday has ended. Five non-holiday ageing days elapse and the same obligation remains unpaid. | Operational DPD is 20. | Q-006 boundary/day ordering |
+| EX-012 | All overdue obligations are cleared during the holiday; no other obligation is overdue at exit. | Operational DPD is zero; the entry count must not be restored at exit. | Payment allocation details remain Q-002/Q-005 |
+
+Review status: Designed as discussion cases; no application tests executed. DPD examples reflect D-008; financial repayment amounts remain uncalculated and unapproved.
 
 ## Open decisions and readiness
 
-Core scope, separate accrual and repayment-increase policy are confirmed (D-002–D-005). Material details within Q-001–Q-007 remain open. D-006 confirms spreading and equal total repayments with final rounding. D-007 confirms contractual version creation on approval and preservation of the original. Next resolve operational arrears treatment and remaining calculation/version lifecycle details. Not ready for engineering.
+Core scope, separate accrual and repayment-increase policy are confirmed (D-002–D-005). Material details within Q-001–Q-007 remain open. D-006 confirms spreading and equal total repayments with final rounding. D-007 confirms contractual version creation on approval and preservation of the original. D-008 confirms operational DPD pause/resume without a separate total-days measure. Next resolve remaining monetary arrears/penalties, calculation and version lifecycle details. Not ready for engineering.
 Implementation linkage: [implementation.md](implementation.md). Evidence and decision authority: [decisions.md](decisions.md).
