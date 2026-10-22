@@ -9,7 +9,7 @@ Platform evidence commit SHA: `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`
 
 ## Scope and blockers
 Draft discussion scope only: [requirements.md](requirements.md).
-Confirmed task: D-001. No FR/BR set is approved. P-001–P-008 are proposals; EX-001–EX-007 are decision probes.
+D-001 confirms the task; D-002–D-005 confirm initial scope and treatment. FR-001–FR-005 and BR-001/002 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
 Blocking questions: Q-001–Q-007 in [decisions.md](decisions.md).
 Do not implement a holiday policy from this draft.
 
@@ -32,7 +32,7 @@ When approved, create the platform execution brief and numbered tickets under .s
 | Proposed area | Discussion examples | Existing evidence | Gap |
 | --- | --- | --- | --- |
 | Holiday rows and interest | EX-001/002 | Existing holiday test definitions (E-004) | Actual accrual/ledger and agreed numerical expectations |
-| Maturity and repayment | EX-001/003 | Residual reporting code/ticket (E-003/E-006) | Chosen collection policy, dates and final amount |
+| Maturity and repayment | EX-001/003 | Residual reporting code/ticket (E-003/E-006) | Repayment increase selected; recovery profile, rounding and exact final amount unresolved |
 | Cancellation/eligibility | EX-004/005 | Window semantics and existing lifecycle (E-007/E-009) | Accepted exceptions and end-to-end tests |
 | Replay/regression | EX-006/007 | Existing invariants (E-008) | Fixed baseline fixtures and executed outcomes |
 
