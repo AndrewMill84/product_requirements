@@ -1,40 +1,42 @@
-# PHM-001 — Define repayment and maturity after a payment holiday
+# PHM-001 — Repayment and maturity after a payment holiday
 
 Status: Draft  
 Owner: Andrew Millard  
-Last updated: 22 October 2026  
+Last reviewed: 22 October 2026  
 Product acceptance: Not accepted  
-Related behaviour: BHV-008 Payment Holiday (existing expert backlog identifier; not yet modelled in behaviours.yaml)
+Related behaviour: BHV-008, expert backlog identifier; not a locked graph entry.
 
-## Purpose and scope
+## Purpose and agreed scope
 
-Outcome: Define how a payment holiday changes expected collections, interest and final repayment, without confusing projections with contractual obligations.
+Define the holiday's contractual repayments, separate interest, operational treatment and approval preview.
 
-Confirmed task: Prepare requirements for the recommended capability, using the Loan Domain Expert workflow (D-001).
+| Area | Confirmed treatment |
+| --- | --- |
+| Product/window | One future holiday on a fixed-rate monthly annuity; one to six consecutive instalments, leaving at least one later repayment by unchanged maturity (D-002/D-015/D-016/D-019). |
+| Interest/repayment | Separate, non-interest-bearing holiday interest; equal increased total repayments after the holiday, final rounding adjustment, unchanged maturity (D-003–D-006/D-020). |
+| Contract/history | New version created on approval, effective at holiday start. Preserve original; pre-start cancellation retains cancelled history. No automatic contract rewrite after voluntary payment (D-007/D-011–D-013/D-018). |
+| Servicing | Pause operational DPD and new late penalties over holiday days; preserve old arrears/penalties. Resume only for remaining overdue obligations. Existing arrears alone do not disqualify a borrower (D-008–D-010/D-014). |
+| Payments/approval | Voluntary receipts use current applicable allocation; existing general approval controls apply. Show pre-approval preview and reject stale figures (D-017/D-021–D-023). |
 
-Confirmed first slice (D-002): One future holiday on a fixed-rate equal-instalments (ANNUITY) loan. Interest accrues separately (D-003). Repayments increase afterwards and the term stays unchanged (D-004). Holiday interest is spread across remaining post-holiday repayments; total repayments are equal, subject to a final rounding adjustment (D-006). Approval creates a new contractual schedule version and preserves the original for history (D-007). Operational DPD excludes holiday days and resumes afterwards for remaining overdue obligations; no separate total-days-overdue measure is added (D-008). Late-payment penalties pause during the holiday; ordinary interest continues separately (D-009). Existing penalties remain outstanding; post-holiday penalties resume only for remaining overdue amounts, without retrospective holiday charges (D-010). The new version becomes effective at holiday commencement; the existing schedule remains operative before then (D-011). Cancellation before commencement retains the future version as cancelled and keeps the existing schedule operative (D-012). Existing arrears do not by themselves prevent eligibility and remain separately outstanding, outside automatic spreading into revised repayments (D-014). Maximum holiday duration is six months (D-015). Initial monthly scope allows one to six consecutive scheduled instalments, leaving at least one later repayment by unchanged maturity (D-016). Voluntary payments are allowed during the holiday and use the current applicable payment-allocation rules; holiday-specific allocation is possible later scope (D-017). Voluntary payments update balances and the forward forecast without automatically changing the approved contractual schedule; contractual recalculation requires an explicit reschedule (D-018). The holiday covers the first deferred due date through the day before repayments resume, inclusive, for DPD and penalty pauses (D-019). Unpaid holiday interest does not earn interest; ordinary interest continues on outstanding principal only (D-020). Other eligibility and API/operator outputs remain to confirm.
+Term extension/final residual strategies are future options (D-005). Post-start holiday changes/cancellations are deferred (D-013). Other products are outside D-002's initial scope. Overlap/concurrent-modification handling and remaining eligibility require R-003.
 
-Confirmed exclusion (D-013): Changes and cancellations after holiday commencement are deferred from the initial release. This does not authorise ad hoc corrections or deleting posted history. The unsupported-request response and exact commencement boundary remain to specify.
+Confirmed policy is separate from final specification acceptance. The four grouped decisions in [reconciliation-review.md](reconciliation-review.md) are the remaining product blockers; implementation gaps do not reopen settled choices.
 
-Future consideration (D-005): Term extension and final residual-payment policies may be added later. This does not require implementing configuration or alternative strategies now.
+## Current versus target
 
-Remaining proposed exclusions — awaiting confirmation: Concurrent rate changes, overlapping holidays, backdated changes, interest-only/bullet loans, fee/penalty policy changes and full collections automation. Existing behaviour for excluded cases still needs regression protection; exclusion does not authorise breaking it.
+| Current evidence | Required change / remaining boundary |
+| --- | --- |
+| L3 holiday code capitalises projected interest and can leave terminal residual (E-003/E-011). Actual COB accrues on principal into a common interest receivable (E-010). | Retain principal-only actual accrual, track holiday interest separately and reconcile projection with postings. |
+| Existing future rows/reference payments are retained; holiday event does not create a contractual version (E-011/E-012). | Implement D-004/D-007/D-011/D-012. Approval/start/exit estimate differences remain R-002. |
+| DPD and COB penalties have no holiday-day input (E-013/E-014). | Apply confirmed pauses and consistent outputs; separate old arrears from newly deferred obligations. |
+| Existing allocator has one interest pool and allocation identity mainly by instalment number (E-017). | Preserve component waterfall; decide holiday/ordinary interest attribution and avoid duplicate old principal (R-001/R-003). |
+| API approval controls/preview safeguards are incomplete (E-015/E-016). | Establish general actor permission mapping, atomic freshness check and version lifecycle. |
 
-Approval policy (D-021): Reuse existing applicable platform permissions and controls; no separate holiday-specific workflow. Identify the actual authorisation mapping from platform evidence before readiness. Actor and other eligibility details remain open (Q-001/Q-006). Existing scheduled-event and arrangement paths are evidence, not an agreed new workflow.
+Evidence uses platform commit `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`. See [decisions.md](decisions.md) and the review.
 
-## Current behaviour and evidence
+## Required behaviour and business rules
 
-| Area | Observed or documented position | Target |
-| --- | --- | --- |
-| Holiday projection | Forecast rows have zero total/principal due; interest can increase projected closing principal. Tests cover both accrue_interest values (E-003/E-004). | D-003: accrue interest separately; do not capitalise it into principal. Collection details remain Q-002. |
-| After holiday | Annuity forecast retains reference instalment amounts and iterates existing future dates. Positive residual is returned separately (E-003). | D-004: increase post-holiday repayments within the unchanged term. Calculation details remain Q-003. |
-| Final repayment | Payment-schedule spec says the final annuity row clears the balance. Code can leave residual; prior ticket resolved this through explicit residual reporting (E-005/E-006). | D-004 rules out selecting a final residual-payment policy for this release. Reconcile code/spec with repayment increase; rounding and last-date holiday treatment remain open. |
-| Contract versus projection | Existing documents separate L1 contractual schedule, L2 actual position and L3 payment schedule. Holiday events do not themselves create a new version (E-001/E-005). | D-007: approval creates a new contractual schedule version, preserving the original. D-011 makes the new version effective at holiday commencement, with the existing version operative beforehand. D-012 fixes pre-start cancellation. Reconcile existing documents; exact boundary processing remains Q-004. |
-| Servicing effects | Arrangement lifecycle exists, but source documents still defer scheduled-event transition rules (E-007). | Q-005: establish collection, arrears and actual accrual effects. |
-
-## Required behaviour
-
-The following obligations record confirmed product decisions. The complete capability remains Draft because detailed calculation, version lifecycle and operational effects are unresolved.
+These statements record confirmed decisions. They are not a complete accepted implementation baseline.
 
 | ID | Requirement | Decision |
 | --- | --- | --- |
@@ -100,98 +102,79 @@ The following obligations record confirmed product decisions. The complete capab
 | BR-016 | Ordinary interest must exclude the separate holiday-interest balance from its calculation base. | D-020 |
 | BR-017 | A separate holiday-specific approval workflow is outside the initial release. | D-021 |
 
-Spreading is confirmed. Voluntary holiday payments use current applicable allocation rules (D-017). The mapping of separate holiday interest into those rules, post-holiday component calculation remain unresolved. D-020 confirms no interest on unpaid holiday interest and principal-only ordinary accrual. Do not infer that equal total repayments require equal deferred-interest components.
+## Remaining decisions and candidate disposition
 
-The following remaining candidates are recommendations for discussion; confirmed FR/BR entries above take precedence. They are deliberately non-normative and are not an approved implementation contract.
-
-| Candidate ID | Proposed behaviour | Decisions required |
-| --- | --- | --- |
-| P-001 | Identify the affected collection dates and show the holiday's agreed treatment. | Q-001/Q-006 |
-| P-002 | Calculate interest and deferred amounts using the selected treatment, effective dates and rounding rules. | Q-002/Q-006 |
-| P-003 | Calculate subsequent instalment amounts, dates and final repayment using the selected exit treatment. | Q-003 |
-| P-004 | Distinguish original contractual maturity, any revised contractual maturity and projected final collection date. | Q-003/Q-004 |
-| P-005 | Explain any unpaid terminal amount and its agreed collection treatment. Do not imply zero debt from the last displayed date alone. | Q-003 |
-| P-006 | Apply the agreed holiday treatment consistently to collection dues, L2 shortfall, DPD, penalties and actual interest postings. | Q-005 |
-| P-007 | Apply cancellation before commencement and repeat requests without unintended financial effects. | Q-006/Q-007 |
-| P-008 | Preserve historical records and reproduce agreed outcomes on replay. | Q-004/Q-005; existing platform constraints E-008 |
-
-As remaining decisions are confirmed, promote only unresolved candidate details into additional atomic FR/BR statements, linked to decision IDs. FR-001–FR-041 and BR-001–BR-017 already record confirmed policy. Do not relabel candidates as confirmed merely because a draft is committed.
-
-## Business rules and dependencies
-
-Existing constraints to preserve or explicitly reconcile: append-only history; Decimal calculations and ADR-001 rounding/day ordering; schedule layer vocabulary; current event window semantics (inclusive due dates). These are platform evidence, not newly approved product defaults.
-
-Material choices still open: detailed eligibility and scope boundaries; allocation of separately accrued interest within each repayment; exact repayment calculation and rounding precision; configuration owner/default; schedule-version cancellation and exact boundary handling; arrears handling and exceptions. See [decisions.md](decisions.md).
-
-## Exceptions to resolve
-
-| Condition | Required decision |
+| Question | Remaining product issue |
 | --- | --- |
-| Holiday leaves no later scheduled repayment | Ineligible under D-016/FR-026. Exact validation response remains open; do not extend maturity automatically. |
-| Recalculated repayment cannot satisfy the unchanged maturity or exceeds an agreed limit | Q-003/Q-006: agree feasibility limits and failure response without extending the term |
-| Existing arrears when holiday begins | D-008 fixes DPD pause/resume. D-009 pauses new late-payment penalties. D-010 preserves existing penalties and restricts post-holiday resumption. D-014 allows existing arrears, retained separately without automatic spreading. Q-005/Q-006 still govern collection handling, other eligibility checks and exact boundaries. |
-| Inverted/overlapping window or a date that is not a due date | Q-006: preserve or change documented validation explicitly |
-| Cancellation before commencement | D-012: retain the cancelled future version and keep the existing schedule operative. Q-007: repeated-request response remains open. |
-| Duplicate submission | Q-007: replay/conflict response remains open |
-| Change or cancellation after commencement | D-013: outside initial supported scope. Q-007: exact unsupported-request response remains open. |
-| Concurrent modification | Q-001/Q-007: scope and conflict behaviour remain open |
+| Q-002/Q-003 — R-001 | Exact level-payment formula, holiday-interest component profile and partial/voluntary payment attribution. |
+| Q-008 — R-002 | Reconcile approved projected figures with later actual balances/accrual without silently rewriting contractual rows. |
+| Q-001/Q-005/Q-006 — R-003 | Zero deferred scheduled collections, collection of old debt, principal/interest partition and exceptional eligibility. |
+| Q-006 — R-004 | Identify usable general approval authority because current holiday routes do not enforce a permission map. |
 
-## Acceptance examples — decision probes, not approved tests
+The earlier proposal IDs are retained for traceability, not competing requirements:
 
-Use one fixed source schedule, business date, product snapshot and opening balance when numerical cases are agreed. Amounts below are exploratory fixture inputs, not independently calculated expectations.
+| Candidate | Disposition |
+| --- | --- |
+| P-001 | Superseded by FR-025/026/032/033/036; calendar integration is implementation work. |
+| P-002 | Confirmed policy in FR-002/003/034 and BR-001/003/015/016; numerical method still R-001/R-002. |
+| P-003 | Confirmed direction in FR-004–FR-007; exact amounts remain R-001/R-003. |
+| P-004 | Superseded by FR-005/008/009/017/018/039; no revised maturity for initial treatment. |
+| P-005 | Initial residual strategy excluded by BR-002; final clearing/reconciliation remains R-001/R-002. |
+| P-006 | Confirmed FR-010–FR-016/022/023; old-debt/collection boundary still R-003. |
+| P-007 | Confirmed pre-start cancellation FR-019–FR-021; repeat/conflict/error contract is implementation detail under Q-007. |
+| P-008 | Existing append-only/replay constraints E-008 apply; version/replay integration requires implementation. |
 
-| ID | Starting state / action | Expected result | Blocks |
-| --- | --- | --- | --- |
-| EX-001 | Active ANNUITY loan, 12 monthly rows remain, projected opening principal 10,000.00, annual rate 12%; holiday covers next two due dates. | Confirmed: interest accrues separately; principal does not increase from holiday interest; subsequent repayments increase and maturity stays unchanged. Holiday interest is spread across equal total remaining repayments, with a final rounding adjustment. Exact amounts and component allocation remain unresolved. | Q-001–Q-005 |
-| EX-002 | Same fixture with interest disabled in holiday request. | D-003 requires separate accrual for this initial treatment. Whether an incompatible request is rejected or the field is unavailable remains Q-006; it must not silently select a different policy. | Q-002/Q-005 |
-| EX-003 | Holiday covers the final contractual due date and leaves no later repayment. | Ineligible under D-016. Do not approve the holiday or extend maturity automatically. Exact validation response remains open. | Q-006/Q-007 response details |
-| EX-004 | Confirmed future holiday is cancelled before it starts. | Retain the future version as cancelled for audit history; keep the existing schedule operative. Do not activate the cancelled version. Repeat-cancellation response remains open. | Q-007 repeated-request details |
-| EX-005 | Account already has overdue interest when holiday is requested. | Operational DPD pauses during an approved holiday and resumes afterwards for remaining overdue obligations. Late-payment penalties pause during the holiday. Existing penalties remain outstanding and penalties resume only for remaining overdue amounts, without holiday catch-up. Existing arrears alone do not prevent eligibility; keep them separately outstanding and exclude them from automatic holiday repayment spreading. Collection handling and other eligibility checks remain unresolved. | Q-005/Q-006 remaining details |
-| EX-006 | Same confirmed event history is replayed. | Existing constraint INV-004 expects reproducibility; holiday-specific numerical oracle depends on confirmed rules. | Q-002–Q-005 |
-| EX-007 | Ordinary annuity account has no holiday. | Compare pre/post-change outputs at a fixed baseline; no new policy should leak into this control case. Specific regression oracle to capture during implementation. | Confirmed scope and baseline |
-| EX-008 | Holiday interest is 120.00 and ten post-holiday repayments remain. | Recover 120.00 across those repayments, separately from principal. Total repayments are equal except for final rounding. Do not assume each deferred-interest component is 12.00 until the allocation rule is agreed. | Q-002/Q-003 exact calculation and allocation |
-| EX-009 | A future holiday is approved for an account with an existing contractual schedule. | Create a new contractual version reflecting agreed holiday repayment treatment; retain the original unchanged for history. New version is effective at holiday commencement; existing version remains operative until then. Pre-start cancellation retains a cancelled future version and keeps the existing schedule operative (D-012). Post-start changes/cancellations are deferred under D-013; unsupported-request details remain open. | Q-004 lifecycle details |
+## Exceptions and observable responses
 
-| EX-010 | Operational DPD is 15 at holiday entry. Thirty holiday days elapse; the same oldest obligation remains unpaid. | Operational DPD remains 15 throughout the holiday. No separate total-calendar-days-overdue measure is introduced. | Q-006 exact holiday boundary/day ordering |
-| EX-011 | EX-010 holiday has ended. Five non-holiday ageing days elapse and the same obligation remains unpaid. | Operational DPD is 20. | Q-006 boundary/day ordering |
-| EX-012 | All overdue obligations are cleared during the holiday; no other obligation is overdue at exit. | Operational DPD is zero; the entry count must not be restored at exit. | Payment allocation details remain Q-002/Q-005 |
+Existing ACTIVE-account lifecycle, inclusive due-date windows, non-overlap and product date conventions are source constraints to preserve or explicitly change. R-003 confirms their application to the final release boundary.
 
-| EX-013 | A loan with overdue obligations enters an approved holiday; ordinary interest remains applicable. | No late-payment penalties accrue or are assessed for holiday days. Ordinary interest continues accruing separately. Existing posted penalties remain outstanding. Resume penalties afterwards only for remaining overdue amounts; never charge for holiday days retrospectively. | Q-005/Q-006 remaining penalty and boundary details |
+Requests exceeding six instalments or leaving no later repayment are ineligible (FR-024–FR-026). Post-start changes/cancellations are unsupported (D-013). Invalid, conflicting or unsupported requests must not create a partial approved version, activate a cancelled version or mutate financial history. This is an integrity interpretation for review, not a new agreed correction workflow. Use existing problem-detail/idempotency conventions; exact endpoint/error-code design belongs to implementation.
 
-| EX-014 | Outstanding penalties are 50.00 at holiday entry; no payment, waiver or correction occurs during the holiday. Overdue amounts remain at exit. | Existing penalties remain 50.00 through the holiday. Post-holiday penalties may resume under applicable rules, but exclude all approved holiday days. | Q-006 exact boundaries; applicable rate/base |
-| EX-015 | All overdue amounts are cleared before holiday exit; no new amount becomes overdue afterwards. | Do not resume late-payment penalties merely because the holiday ended. | Q-002/Q-005 allocation and arrears calculation |
+Do not treat omission of a final repayment as permission to extend maturity. Do not label old debt twice as both separately overdue principal and newly amortised principal.
 
-| EX-016 | Holiday is approved on business date 1 June and starts on 1 July. | Create the future-effective version on 1 June. Use the existing contractual version for dates before 1 July, then the new version from 1 July. Preserve the original unchanged. | Q-004/Q-006 exact activation-day processing order |
+## Acceptance examples
 
-| EX-017 | A future holiday version is cancelled before commencement; the business date then reaches its former start date. | The cancelled version remains available for audit history and must not activate. The existing contractual schedule remains operative. | Q-004/Q-006 exact business-date ordering |
+Financial fixtures need fixed business/as-of dates, actual adjusted due dates, product snapshot, principal/interest/arrears buckets and posting-policy version. No numerical repayment oracle has yet been approved.
 
-| EX-018 | A request changes or cancels a holiday after commencement. | Outside the supported initial-release scope (D-013). No post-start correction workflow is specified. Agree exact rejection/response and boundary handling before engineering readiness. | Q-007 unsupported-request response; Q-006 boundaries |
+| ID | Starting state / action | Expected outcome or unresolved part |
+| --- | --- | --- |
+| EX-001 | Principal 10,000.00; annual rate 12%; 12 rows remain; next two rows deferred. | Separate holiday interest; increased equal total subsequent repayments; unchanged maturity. Exact components/amounts: R-001/R-002. |
+| EX-002 | Same case, but request disables holiday interest. | Incompatible with D-003; no silent alternate interest treatment. Validation/API design required. |
+| EX-003 | Holiday consumes final contractual due date; no later row remains. | Ineligible under D-016. No automatic extension. |
+| EX-004 | Cancel approved holiday before commencement. | Retain cancelled future version; existing schedule remains operative. |
+| EX-005 | Old overdue interest exists on otherwise eligible account. | Allow arrears; retain separately, pause DPD/penalties, resume for remaining overdue debt. Collection/interest recovery boundary: R-003. |
+| EX-006 | Replay same event history. | INV-004 requires same balances, version selection, DPD and penalties. Exact money oracle follows R-001–R-003. |
+| EX-007 | No holiday on a control account. | Preserve existing product behaviour; fixed regression baseline required. |
+| EX-008 | Holiday interest H=120.00; ten repayments remain. | Recover H without interest-on-interest, in equal total repayments except final rounding. H/10 components are recommended, not yet selected (R-001). |
+| EX-009 | Approve a future holiday. | Create new contractual version, preserve original, defer effectiveness to holiday start. |
+| EX-010 | Entry DPD=15; 30 approved holiday days pass; old debt unpaid. | Operational DPD remains 15. Do not add a new total-days metric. |
+| EX-011 | Five non-holiday ageing days follow EX-010; same old debt unpaid. | Operational DPD=20. |
+| EX-012 | Payment clears all overdue debt during holiday; none overdue on exit. | DPD=0; do not restore entry count. |
+| EX-013 | Late penalties would normally arise during holiday. | No holiday-period late penalties; ordinary interest continues separately. |
+| EX-014 | Penalty balance=50.00 at entry; no payments/waivers/corrections. | Remains 50.00 through holiday; prospective resumption only if overdue debt remains. |
+| EX-015 | Old debt cleared before exit; no new overdue amount. | Do not resume penalties merely because holiday ended. |
+| EX-016 | Approval 1 June; holiday start 1 July. | Create version in June; old version operative before July; new version effective 1 July. Pre-start actual changes: R-002. |
+| EX-017 | Cancel before start; former start date arrives. | Cancelled version never activates; audit history retained. |
+| EX-018 | Change/cancel after commencement. | Unsupported initial scope. No invented correction path. |
+| EX-019 | Old arrears=500.00; no settlement occurs. | Retain separately; no automatic spreading. Principal portion must not also be included in recast principal (R-003). |
+| EX-020 | Six deferred instalments with at least one later repayment. | Meets count/remaining-row constraints; other agreed eligibility still applies. Use D-019 calendar coverage. |
+| EX-021 | Seven deferred instalments requested. | Exceeds maximum; not approved. |
+| EX-022 | Seven rows remain; first six deferred. | Meets count and remaining-row limits; unchanged maturity. |
+| EX-023 | Six rows remain; all six deferred. | Ineligible because no later repayment remains. |
+| EX-024 | Voluntary receipt during holiday; old debt and holiday interest exist. | Use current applicable waterfall, update debt/DPD; holiday-interest attribution still R-001. |
+| EX-025 | Apply voluntary receipt; no explicit reschedule. | Update balances/L3; preserve contractual amounts/dates/version and holiday. |
+| EX-026 | Deferred due dates 1 July/1 August; repayments resume 1 September. | Pause DPD/penalties 1 July–31 August inclusive: 62 days. Resume normal rules 1 September; principal-only interest continues. |
+| EX-027 | Principal=10,000.00; unpaid holiday interest=120.00. | Ordinary interest base=10,000.00, never 10,120.00; daily rounding follows existing policy. |
+| EX-028 | Two actors attempt approval. | Apply agreed general permissions; no assumed dual approval. Actor mapping remains R-004. |
+| EX-029 | Generate pre-approval preview. | Dates, separate projected H, revised repayments and unchanged maturity shown. Projected versus posted amounts distinguished. |
+| EX-030 | Payment follows preview but precedes approval. | Reject stale approval; require refreshed figures. Compare-and-write atomically (implementation). |
+| EX-031 | Old overdue principal is already included in ledger principal. | Recast plus retained old claims must count it once, not twice. Exact partition/interest treatment: R-003. |
+| EX-032 | Business date changes after preview without account-sequence change. | Detect relevant input changes, not only payment sequence; refresh before approval as D-023 requires. |
+| EX-033 | Actual H differs from approved projected H after a voluntary payment. | Update L3, preserve approved contract (D-018); recovery of difference needs R-002. |
+| EX-034 | Holiday-deferred row falls due; old arrears also exist. | Zero new scheduled collection/old-debt collection boundary must be confirmed in R-003; DPD/penalty pauses remain confirmed. |
 
-| EX-019 | Existing arrears are 500.00 when an otherwise eligible borrower's holiday is approved; no payment, waiver or correction settles them. | The holiday is not refused solely because of those arrears. Keep 500.00 separately outstanding; do not silently add it to the amounts spread across revised repayments. This does not decide collection attempts or allocation of later receipts. | Q-005 collection handling; Q-002 allocation; Q-006 other eligibility |
+Review only: existing tests were inspected, not executed. New examples are not claims of implemented coverage.
 
-| EX-020 | An otherwise eligible request specifies a six-month holiday. | Six consecutive monthly instalments meet the duration limit if at least one later repayment remains by unchanged maturity. Other eligibility and feasibility checks still apply; calendar-day pause boundaries remain open. | Q-006 precise duration semantics |
-| EX-021 | A request specifies a seven-month holiday. | The duration exceeds the permitted limit and must not be approved under the initial treatment. Exact error response remains to specify. | Q-006/Q-007 response contract |
+## Readiness and handoff
 
-| EX-022 | Seven monthly repayments remain; the requested holiday covers the first six consecutively. | Meets the count and remaining-repayment constraints; keep maturity unchanged. Other eligibility and calculation checks still apply. | Remaining eligibility/calculation |
-| EX-023 | Six monthly repayments remain; the requested holiday covers all six. | Ineligible despite meeting the six-month maximum, because no later scheduled repayment remains. | Exact validation response |
-
-| EX-024 | An otherwise valid voluntary payment is received during an approved holiday; the account has existing arrears and separately accrued holiday interest. | Accept the payment subject to existing payment validation and allocate it under the current rules applicable to that loan. Do not introduce a holiday-specific waterfall. Derive numerical allocations from verified existing rules, including the agreed mapping of holiday interest; do not assume new precedence. Recalculate DPD when the oldest overdue obligation is settled (D-008). | Existing allocation evidence and holiday-interest mapping; D-018 preserves contractual amounts; exact forecast calculation remains to establish |
-
-| EX-025 | A voluntary payment is applied during the holiday under the current allocation rules. An approved contractual version already exists. No explicit reschedule occurs. | Update affected balances and the forward forecast. Preserve the approved contractual version's amounts and dates; do not create or activate a replacement contractual version solely because of the payment. Payment does not itself cancel or amend the holiday. | Exact forecast/interest mapping and numerical fixtures |
-
-| EX-026 | Deferred monthly instalments are due on 1 July and 1 August; repayments resume on 1 September. | Holiday starts 1 July and ends 31 August, inclusive. Exclude all 62 holiday calendar days from operational DPD ageing and late-payment penalties. Normal post-holiday rules apply from 1 September, subject to due-date/payment/COB ordering; no holiday catch-up penalties. Ordinary interest continues separately throughout. | Business-day date selection and same-day processing order |
-
-| EX-027 | Outstanding principal is 10,000.00 and separate unpaid holiday interest is 120.00. Rate and accrual date/basis remain unchanged. | Calculate ordinary interest using 10,000.00, not 10,120.00. The 120.00 does not itself earn interest during or after the holiday while unpaid. Exact daily amount uses existing agreed accrual and rounding rules. | Numerical fixture and existing accrual-rule verification |
-
-| EX-028 | Authorised and unauthorised actors attempt to approve the same otherwise valid holiday request. | Apply the existing applicable platform approval controls. Do not introduce a new holiday-specific second-approver requirement or bypass existing controls. Derive expected permissions and responses from verified platform evidence; missing mappings remain blockers. | Q-006 actual permission/control mapping |
-
-| EX-029 | An operator prepares an otherwise eligible future holiday for approval. | Before approval, show start/end dates, separate holiday-interest amount, revised repayments and unchanged maturity. Future holiday interest is a projection, not a claim of an already posted balance. D-023 requires refresh after relevant changes and prevents stale-preview approval. Numerical estimates and exact dependency mapping remain to establish. | Q-003 calculation baseline; Q-007 preview freshness/conflicts |
-
-| EX-030 | A preview is generated; a payment is then applied before approval. The operator attempts approval using the earlier preview. | Prevent approval using the stale preview and require a refreshed preview reflecting current relevant state before approval can proceed. Do not silently approve changed figures. Exact response and dependency detection remain to specify. | Q-007 response contract; current platform concurrency/control evidence |
-
-Review status: Designed as discussion cases; no application tests executed. DPD examples reflect D-008; financial repayment amounts remain uncalculated and unapproved.
-
-## Open decisions and readiness
-
-Core scope, separate accrual and repayment-increase policy are confirmed (D-002–D-005). Material details within Q-001–Q-007 remain open. D-006 confirms spreading and equal total repayments with final rounding. D-007 confirms contractual version creation on approval and preservation of the original. D-008 confirms operational DPD pause/resume without a separate total-days measure. D-009 confirms the late-payment penalty pause. D-010 confirms existing penalty retention and prospective resumption without holiday catch-up. D-011 fixes the new version's effective date at holiday commencement. D-012 confirms pre-start cancellation and audit retention. D-013 defers post-start changes/cancellations. D-014 confirms eligibility with existing arrears and separate retention without automatic rescheduling. D-015 confirms the six-month maximum. D-016 confirms one to six consecutive monthly instalments and at least one later repayment by unchanged maturity. D-017 confirms voluntary holiday payments under current applicable allocation rules. D-018 confirms payment-driven balance/forecast updates without automatic contractual recalculation. D-019 confirms inclusive calendar-day pause boundaries ending before repayments resume. D-020 confirms principal-only ordinary interest and no interest on holiday interest. D-021 confirms reuse of existing approval controls without a holiday-specific workflow. D-022 confirms the operator pre-approval preview. Next verify actual permissions, business-day/date selection, holiday-interest allocation mapping, collection handling, repayment calculation and preview dependency detection. D-023 confirms refresh is required after relevant changes. Not ready for engineering.
-Implementation linkage: [implementation.md](implementation.md). Evidence and decision authority: [decisions.md](decisions.md).
+Four product groups R-001–R-004 block completeness; user acceptance of the final specification is pending. Once resolved, approve numerical fixtures, reconcile shared platform specifications/ADRs and obtain explicit acceptance. Then pin an immutable accepted baseline in [implementation.md](implementation.md). Technical work and evidence are summarised in [reconciliation-review.md](reconciliation-review.md).

@@ -1,65 +1,46 @@
 # Implementation handoff — PHM-001
 
 Target: https://github.com/AndrewMill84/loan-admin-platform  
-Delivery state: Blocked — product decisions pending  
-Product acceptance of requirements: Not accepted  
-Accepted by / date / scope: None  
-Accepted requirements baseline commit SHA: Not pinned  
-Platform evidence commit SHA: `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`
+Delivery state: Blocked — final product decisions and acceptance pending  
+Product acceptance: Not accepted  
+Accepted requirements baseline SHA: Not pinned  
+Platform evidence SHA: `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`
 
-## Scope and blockers
-Draft discussion scope only: [requirements.md](requirements.md).
-D-001 confirms the task; D-002–D-023 confirm initial scope and treatment. FR-001–FR-041 and BR-001–BR-017 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
-Blocking questions: Q-001–Q-007 in [decisions.md](decisions.md).
-Do not implement a holiday policy from this draft.
+## Agreed policy and scope
 
-Confirmed exclusion: Do not implement post-commencement holiday changes or cancellations in this release (D-013). Pre-start cancellation remains supported (D-012). Record and agree the unsupported-request contract; do not silently invent a correction path.
+D-001–D-023 and FR-001–FR-041 / BR-001–BR-017 are the current confirmed record; read [requirements.md](requirements.md) and [decisions.md](decisions.md). No capitalisation, term extension or residual-payment strategy is in the initial treatment. Post-start holiday amendment/cancellation is deferred.
 
-D-015 fixes the maximum duration at six months. Do not assume six months equals 180 days. D-016 fixes one to six consecutive monthly instalments and requires at least one later scheduled repayment by unchanged maturity. D-019 fixes the pause from first deferred due date through the day before repayments resume, inclusive. Business-day/date selection, same-day processing order and validation responses remain to establish.
+Four product groups R-001–R-004 in [reconciliation-review.md](reconciliation-review.md) still block completeness: exact repayment/component attribution; post-approval projection-versus-actual recovery; collection/old-debt partition and remaining eligibility; general approval permissions. Do not select these in code or infer final acceptance.
 
-D-017 allows voluntary payments during the holiday under the current allocation rules applicable to the loan. Investigate and reference those exact rules at a recorded platform commit. Do not infer a new waterfall, interest bucket priority, automatic reschedule or holiday cancellation from receipt of a payment. Holiday-specific allocation is future consideration only. D-018 requires balance/forecast updates with no automatic contractual schedule recalculation; an explicit reschedule is required to change contractual obligations. This does not bring the post-start holiday amendments deferred by D-013 into scope.
+## Technical delivery work after decisions
 
-D-020 requires ordinary interest on outstanding principal only and prohibits interest on unpaid holiday interest, including after the holiday. Keep the separate holiday-interest balance outside the accrual base; verify both actual COB and forecast use the same agreed economics. Do not treat this as a change to unrelated future component products.
+| Area | Needed work / evidence |
+| --- | --- |
+| Calculations and balances | Separate non-interest-bearing holiday-interest tracking; revised equal repayments on existing dates; reconcile daily-rounded postings with forecasts; no double recovery or capitalisation. |
+| Version lifecycle | Create future-effective version on approval, retain old version, choose operative version by date, retain pre-start-cancelled history, and replay deterministically. The ScheduleVersion dataclass alone does not provide this. |
+| Old debt and allocations | Preserve applicable waterfall and pool semantics; implement confirmed interest attribution and old-principal partition. Allocation/history identity must survive schedule versions. |
+| DPD/penalties | Exclude holiday days; recalculate after old debt clears; suppress holiday penalties without catch-up; retain posted debt; consistent operational outputs. |
+| Approval | Enforce a general authenticated actor/permission map. Current actor headers and placeholder approval endpoints are not access control. Do not invent bespoke holiday maker-checker. |
+| Preview/concurrency | Bind approved figures to relevant account/schedule/holiday/policy/date inputs. Compare current state and write atomically; sequence alone misses business-date/policy changes. |
+| Dates and API | Use existing product business-day conventions and derive D-019 pause from selected due rows. Idempotent retry, conflict and unsupported-operation contracts follow existing conventions. |
+| Documentation/graph | Reconcile platform specification saying holidays do not create versions, and final-row clearing statement versus residual-reporting implementation. Map BHV-008 only after agreement; no global RULE IDs yet assigned. |
 
-D-021 requires existing applicable approval permissions/controls without a separate holiday-specific workflow. Inspect actual implementation and unresolved auth/maker-checker dependencies. Do not interpret reuse as permission to bypass authorisation or assume dual control exists. Record missing permission mappings as blockers.
+Use [review evidence E-010–E-019](reconciliation-review.md) for immutable source links and implementation anchors. These are technical gaps, not newly open financial-policy choices.
 
-D-022 requires a pre-approval operator preview of dates, separate holiday interest, revised repayments and unchanged maturity. Future accrual is projected, not already posted. D-023 requires refresh after relevant changes and prohibits stale-preview approval. Exact dependency detection, concurrency handling, calculation timing and error contract remain to specify.
+## Coverage to establish
 
-## Existing mappings and constraints
-BHV-008 is the Payment Holiday identifier in the expert backlog, not a locked current graph entry.
-Relevant existing invariants: INV-001/002/004/006/008/011; INV-005/009 apply to their defined contractual schedule scope. INV-003/007 matter if payment/cash handling is changed.
-D-007 requires approval-triggered contractual schedule version creation while preserving the original. Existing documents describe holidays without a new version; implementation must reconcile that documented intent and investigate deferred versioning support. D-011 fixes effectiveness at holiday commencement, keeping the existing version operative before then. D-012 requires retaining the pre-start-cancelled version for audit, keeping the existing schedule operative and preventing future activation. D-013 defers post-start changes/cancellations from the initial release. Exact unsupported-request responses, repeated-request responses and processing order remain open.
-No new RULE identifiers have been assigned. Preserve current graph and ADR authority; reconcile the schedule-spec final-row conflict explicitly.
+| Scoped requirements | Examples | Required evidence |
+| --- | --- | --- |
+| FR-001–FR-007/024–FR-026/032–FR-034; BR-001–BR-003/010/011/014–BR-016 | EX-001–EX-003/008/020–EX-023/026/027 | Independently reviewed money/date fixtures, clean and old-arrears cases, actual accrual versus forecast and final clearing. |
+| FR-008/009/017–FR-021/031; BR-004/008/013 | EX-004/009/016–EX-018/025/033 | Future approval/activation/cancellation/version history and unchanged contract after receipts; persistence/replay. |
+| FR-010–FR-016/022/023; BR-005–BR-007/009 | EX-005/010–EX-015/019/031/034 | DPD pause/resume, arrears clearance, no duplicate old debt, penalty pause with no retrospective charge. |
+| FR-027–FR-030; BR-012 | EX-024/025 | Allocation at actual effective dates, ordinary/holiday interest attribution, receipts/reversals/replay without changing contract. |
+| FR-035–FR-041; BR-017 | EX-028–EX-030/032 | Allowed/rejected actors, displayed preview, payment/date/policy stale checks, atomic approval and duplicate requests. |
+| Cross-cutting | EX-006/007 | Replay parity, unchanged no-holiday controls, financial invariants and regression suite. |
 
-D-008 requires operational DPD to exclude holiday days and resume for remaining overdue obligations; do not add a second calendar-days measure. Recalculate after arrears clearance. Verify persistence/replay and boundary handling. D-009 pauses holiday-period late-payment penalties while ordinary interest continues. D-010 preserves existing penalties and restricts resumption to remaining overdue amounts, without retrospective holiday penalties. D-014 allows otherwise eligible accounts with arrears; retain old arrears separately without automatically spreading them into revised repayments. Collection/allocation and exact boundaries remain open.
+Existing tests were read, not run. Do not claim delivered or verified coverage.
 
-## Likely investigation areas after decisions
-ForecastEngine; ScheduledEvent and arrangement transition; actual COB accrual and ledger treatment; L2 arrears/DPD; schedule versioning; API/UI maturity and repayment outputs.
-These are investigation anchors, not an implementation design or approved file-change list.
+## Delivery references and acceptance
 
-## Implementation references
-Platform local spec / tickets: Not created.
-Platform branch / PR / code commit: Not created.
-GitHub issue: None created.
-When approved, create the platform execution brief and numbered tickets under .scratch/<feature-slug>/ using current platform instructions. Reference immutable accepted requirement/decision links instead of copying competing rules.
-
-## Coverage and verification
-| Proposed area | Discussion examples | Existing evidence | Gap |
-| --- | --- | --- | --- |
-| Holiday rows and interest | EX-001/002 | Existing holiday test definitions (E-004) | Actual accrual/ledger and agreed numerical expectations |
-| Maturity and repayment | EX-001/003 | Residual reporting code/ticket (E-003/E-006) | Equal total repayments with final rounding selected; exact calculation, allocation and final amount unresolved |
-| Cancellation/eligibility | EX-004/005/017 | Window semantics and existing lifecycle (E-007/E-009) | Accepted exceptions and end-to-end tests |
-| Operational DPD | EX-010–EX-012 | D-008 product decision; no executed tests | Entry/exit boundaries, repayment during holiday and replay coverage |
-| Penalty pause and resumption | EX-013–EX-015 | D-009/D-010 product decisions; no executed tests | Existing balances, no holiday catch-up, cleared arrears and exact boundaries |
-| Version creation and effectiveness | EX-009/016 | D-007/D-011 product decisions; no executed tests | Creation versus effective-date queries, activation order, cancellation and replay |
-| Existing arrears | EX-005/019 | D-014 product decision; no executed tests | Other eligibility, collection handling, allocation and no double counting of overdue principal |
-| Duration and near-maturity eligibility | EX-003/020–EX-023 | D-015/D-016 product decisions; no executed tests | Count validation, month-end calendar dates, remaining repayment and error responses |
-| Voluntary holiday payments | EX-024/025 | D-017/D-018 product decisions; no executed tests | Allocation/interest mapping, cleared arrears, updated forecast and unchanged contractual rows/version |
-| Calendar-day holiday coverage | EX-026 | D-019 product decision; no executed tests | Inclusive start/end, resumed-date exclusion, variable month lengths and same-day order |
-| Interest base and no compounding | EX-027 | D-020 product decision; no executed tests | Actual accrual, forecast base, repayment of separate holiday interest and numerical fixtures |
-| Approval controls | EX-028 | D-021 product decision; no executed tests | Actual permissions, allowed/rejected actors, missing control dependencies and API/UI consistency |
-| Operator preview | EX-029/030 | D-022/D-023 product decisions; no executed tests | Required displayed outputs, projected/posted distinction, calculation baseline and approval consistency |
-| Replay/regression | EX-006/007 | Existing invariants (E-008) | Fixed baseline fixtures and executed outcomes |
-
-No application tests executed. No delivered acceptance.
-After product approval: commit the accepted content, pin its full SHA here in a subsequent commit, recheck platform changes, and map each approved FR/BR to examples, tests and exact delivered commit.
+Platform spec/tickets, code branch/PR and implementation commit: Not created. No application changes authorised by this handoff.
+After final acceptance, commit the accepted records and pin their full SHA here in a subsequent commit. Create the platform execution brief and numbered tickets under .scratch/<feature-slug>/, following current platform AGENTS.md. Record actual commands/results, environment, PR/commit and limitations for each scoped requirement. Merge/deployment need their own authorisation.
