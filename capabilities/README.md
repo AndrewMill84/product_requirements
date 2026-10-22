@@ -2,6 +2,6 @@
 
 | Capability / folder | Requirements status | Owner | Next decision | Baseline / handoff | Delivery state / platform references |
 | --- | --- | --- | --- | --- | --- |
-| [PHM-001 — Payment-holiday maturity treatment](payment-holiday-maturity-treatment/requirements.md) | Draft | Andrew | Q-004 contractual treatment; remaining calculation and operational rules | [Handoff](payment-holiday-maturity-treatment/implementation.md); no accepted baseline | Blocked — product decisions pending |
+| [PHM-001 — Payment-holiday maturity treatment](payment-holiday-maturity-treatment/requirements.md) | Draft | Andrew | Q-005 arrears treatment; remaining calculation and version lifecycle | [Handoff](payment-holiday-maturity-treatment/implementation.md); no accepted baseline | Blocked — product decisions pending |
 
 Create folders from ../templates/capability/. Each contains requirements.md, decisions.md, checkpoint.md and implementation.md. Examples are fictional, not active requirements. Keep requirement readiness and delivered acceptance separate.

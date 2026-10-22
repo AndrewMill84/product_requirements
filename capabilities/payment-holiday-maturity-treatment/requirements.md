@@ -12,7 +12,7 @@ Outcome: Define how a payment holiday changes expected collections, interest and
 
 Confirmed task: Prepare requirements for the recommended capability, using the Loan Domain Expert workflow (D-001).
 
-Confirmed first slice (D-002): One future holiday on a fixed-rate equal-instalments (ANNUITY) loan. Interest accrues separately (D-003). Repayments increase afterwards and the term stays unchanged (D-004). Holiday interest is spread across remaining post-holiday repayments; total repayments are equal, subject to a final rounding adjustment (D-006). Detailed eligibility and API/operator outputs remain to confirm.
+Confirmed first slice (D-002): One future holiday on a fixed-rate equal-instalments (ANNUITY) loan. Interest accrues separately (D-003). Repayments increase afterwards and the term stays unchanged (D-004). Holiday interest is spread across remaining post-holiday repayments; total repayments are equal, subject to a final rounding adjustment (D-006). Approval creates a new contractual schedule version and preserves the original for history (D-007). Detailed eligibility and API/operator outputs remain to confirm.
 
 Future consideration (D-005): Term extension and final residual-payment policies may be added later. This does not require implementing configuration or alternative strategies now.
 
@@ -27,12 +27,12 @@ Actor, authority, eligibility and approval: Open (Q-001/Q-006). Existing schedul
 | Holiday projection | Forecast rows have zero total/principal due; interest can increase projected closing principal. Tests cover both accrue_interest values (E-003/E-004). | D-003: accrue interest separately; do not capitalise it into principal. Collection details remain Q-002. |
 | After holiday | Annuity forecast retains reference instalment amounts and iterates existing future dates. Positive residual is returned separately (E-003). | D-004: increase post-holiday repayments within the unchanged term. Calculation details remain Q-003. |
 | Final repayment | Payment-schedule spec says the final annuity row clears the balance. Code can leave residual; prior ticket resolved this through explicit residual reporting (E-005/E-006). | D-004 rules out selecting a final residual-payment policy for this release. Reconcile code/spec with repayment increase; rounding and last-date holiday treatment remain open. |
-| Contract versus projection | Existing documents separate L1 contractual schedule, L2 actual position and L3 payment schedule. Holiday events do not themselves create a new version (E-001/E-005). | Q-004: decide when a changed term/amount needs a modification/version. |
+| Contract versus projection | Existing documents separate L1 contractual schedule, L2 actual position and L3 payment schedule. Holiday events do not themselves create a new version (E-001/E-005). | D-007: approval creates a new contractual schedule version, preserving the original. Reconcile existing documents; effective date and cancellation remain Q-004. |
 | Servicing effects | Arrangement lifecycle exists, but source documents still defer scheduled-event transition rules (E-007). | Q-005: establish collection, arrears and actual accrual effects. |
 
 ## Required behaviour
 
-The following obligations record confirmed product decisions. The complete capability remains Draft because collection mechanics, contractual treatment and operational effects are unresolved.
+The following obligations record confirmed product decisions. The complete capability remains Draft because detailed calculation, version lifecycle and operational effects are unresolved.
 
 | ID | Requirement | Decision |
 | --- | --- | --- |
@@ -43,12 +43,15 @@ The following obligations record confirmed product decisions. The complete capab
 | FR-005 | The system must preserve the loan's maturity date when applying this initial holiday treatment. | D-004 |
 | FR-006 | The system must spread holiday-accrued interest across the remaining post-holiday repayments. | D-006 |
 | FR-007 | The system must calculate equal total post-holiday repayments, subject to a final rounding adjustment. | D-006 |
+| FR-008 | The system must create a new contractual schedule version when the payment holiday is approved. | D-007 |
+| FR-009 | The system must preserve the original contractual schedule version for historical reference. | D-007 |
 
 | ID | Business rule | Decision |
 | --- | --- | --- |
 | BR-001 | Holiday interest must not be capitalised into principal under the initial treatment. | D-003 |
 | BR-002 | Term extension and a final residual-payment strategy are outside the initial treatment. | D-004/D-005 |
 | BR-003 | The spreading calculation must retain holiday-accrued interest separately from principal. | D-003/D-006 |
+| BR-004 | Creating the holiday schedule version must not overwrite the original contractual schedule. | D-007 |
 
 Spreading is confirmed; the allocation order within each repayment, exact calculation and compound-interest policy remain unresolved. Do not infer that equal total repayments require equal deferred-interest components.
 
@@ -65,13 +68,13 @@ The following remaining candidates are recommendations for discussion; confirmed
 | P-007 | Apply cancellation before commencement and repeat requests without unintended financial effects. | Q-006/Q-007 |
 | P-008 | Preserve historical records and reproduce agreed outcomes on replay. | Q-004/Q-005; existing platform constraints E-008 |
 
-As remaining decisions are confirmed, promote only unresolved candidate details into additional atomic FR/BR statements, linked to decision IDs. FR-001–FR-007 and BR-001–BR-003 already record confirmed policy. Do not relabel candidates as confirmed merely because a draft is committed.
+As remaining decisions are confirmed, promote only unresolved candidate details into additional atomic FR/BR statements, linked to decision IDs. FR-001–FR-009 and BR-001–BR-004 already record confirmed policy. Do not relabel candidates as confirmed merely because a draft is committed.
 
 ## Business rules and dependencies
 
 Existing constraints to preserve or explicitly reconcile: append-only history; Decimal calculations and ADR-001 rounding/day ordering; schedule layer vocabulary; current event window semantics (inclusive due dates). These are platform evidence, not newly approved product defaults.
 
-Material choices still open: detailed eligibility and scope boundaries; allocation of separately accrued interest within each repayment; exact repayment calculation and rounding precision; configuration owner/default; contractual amendment; arrears handling and exceptions. See [decisions.md](decisions.md).
+Material choices still open: detailed eligibility and scope boundaries; allocation of separately accrued interest within each repayment; exact repayment calculation and rounding precision; configuration owner/default; schedule-version effective date and cancellation; arrears handling and exceptions. See [decisions.md](decisions.md).
 
 ## Exceptions to resolve
 
@@ -97,12 +100,13 @@ Use one fixed source schedule, business date, product snapshot and opening balan
 | EX-005 | Account already has overdue interest when holiday is requested. | Unresolved: eligibility and old versus new shortfalls, DPD and penalties. | Q-005/Q-006 |
 | EX-006 | Same confirmed event history is replayed. | Existing constraint INV-004 expects reproducibility; holiday-specific numerical oracle depends on confirmed rules. | Q-002–Q-005 |
 | EX-007 | Ordinary annuity account has no holiday. | Compare pre/post-change outputs at a fixed baseline; no new policy should leak into this control case. Specific regression oracle to capture during implementation. | Confirmed scope and baseline |
-
 | EX-008 | Holiday interest is 120.00 and ten post-holiday repayments remain. | Recover 120.00 across those repayments, separately from principal. Total repayments are equal except for final rounding. Do not assume each deferred-interest component is 12.00 until the allocation rule is agreed. | Q-002/Q-003 exact calculation and allocation |
+
+| EX-009 | A future holiday is approved for an account with an existing contractual schedule. | Create a new contractual version reflecting agreed holiday repayment treatment; retain the original unchanged for history. Version effective date and cancellation consequences remain open. | Q-004 lifecycle details |
 
 Review status: Designed as discussion cases; no application tests executed and no numerical outcomes approved.
 
 ## Open decisions and readiness
 
-Core scope, separate accrual and repayment-increase policy are confirmed (D-002–D-005). Material details within Q-001–Q-007 remain open. D-006 confirms spreading and equal total repayments with final rounding. Next resolve Q-004 contractual treatment, then outstanding calculation/allocation and operational details. Not ready for engineering.
+Core scope, separate accrual and repayment-increase policy are confirmed (D-002–D-005). Material details within Q-001–Q-007 remain open. D-006 confirms spreading and equal total repayments with final rounding. D-007 confirms contractual version creation on approval and preservation of the original. Next resolve operational arrears treatment and remaining calculation/version lifecycle details. Not ready for engineering.
 Implementation linkage: [implementation.md](implementation.md). Evidence and decision authority: [decisions.md](decisions.md).

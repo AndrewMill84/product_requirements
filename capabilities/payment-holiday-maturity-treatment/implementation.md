@@ -9,13 +9,14 @@ Platform evidence commit SHA: `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`
 
 ## Scope and blockers
 Draft discussion scope only: [requirements.md](requirements.md).
-D-001 confirms the task; D-002–D-006 confirm initial scope and treatment. FR-001–FR-007 and BR-001–BR-003 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
+D-001 confirms the task; D-002–D-007 confirm initial scope and treatment. FR-001–FR-009 and BR-001–BR-004 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
 Blocking questions: Q-001–Q-007 in [decisions.md](decisions.md).
 Do not implement a holiday policy from this draft.
 
 ## Existing mappings and constraints
 BHV-008 is the Payment Holiday identifier in the expert backlog, not a locked current graph entry.
 Relevant existing invariants: INV-001/002/004/006/008/011; INV-005/009 apply to their defined contractual schedule scope. INV-003/007 matter if payment/cash handling is changed.
+D-007 requires approval-triggered contractual schedule version creation while preserving the original. Existing documents describe holidays without a new version; implementation must reconcile that documented intent and investigate deferred versioning support. Effective date and cancellation remain open.
 No new RULE identifiers have been assigned. Preserve current graph and ADR authority; reconcile the schedule-spec final-row conflict explicitly.
 
 ## Likely investigation areas after decisions
