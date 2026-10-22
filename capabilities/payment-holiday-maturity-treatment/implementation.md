@@ -9,11 +9,13 @@ Platform evidence commit SHA: `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`
 
 ## Scope and blockers
 Draft discussion scope only: [requirements.md](requirements.md).
-D-001 confirms the task; D-002–D-014 confirm initial scope and treatment. FR-001–FR-023 and BR-001–BR-009 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
+D-001 confirms the task; D-002–D-015 confirm initial scope and treatment. FR-001–FR-024 and BR-001–BR-010 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
 Blocking questions: Q-001–Q-007 in [decisions.md](decisions.md).
 Do not implement a holiday policy from this draft.
 
 Confirmed exclusion: Do not implement post-commencement holiday changes or cancellations in this release (D-013). Pre-start cancellation remains supported (D-012). Record and agree the unsupported-request contract; do not silently invent a correction path.
+
+D-015 fixes the maximum duration at six months. Do not assume six months equals 180 days. Exact monthly boundary rules and eligibility near maturity remain open.
 
 ## Existing mappings and constraints
 BHV-008 is the Payment Holiday identifier in the expert backlog, not a locked current graph entry.
