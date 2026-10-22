@@ -20,7 +20,7 @@ Future consideration (D-005): Term extension and final residual-payment policies
 
 Remaining proposed exclusions — awaiting confirmation: Concurrent rate changes, overlapping holidays, backdated changes, interest-only/bullet loans, fee/penalty policy changes and full collections automation. Existing behaviour for excluded cases still needs regression protection; exclusion does not authorise breaking it.
 
-Actor, authority, eligibility and approval: Open (Q-001/Q-006). Existing scheduled-event and arrangement paths are evidence, not an agreed new workflow.
+Approval policy (D-021): Reuse existing applicable platform permissions and controls; no separate holiday-specific workflow. Identify the actual authorisation mapping from platform evidence before readiness. Actor and other eligibility details remain open (Q-001/Q-006). Existing scheduled-event and arrangement paths are evidence, not an agreed new workflow.
 
 ## Current behaviour and evidence
 
@@ -72,6 +72,7 @@ The following obligations record confirmed product decisions. The complete capab
 | FR-032 | The system must start the holiday on the first deferred instalment's due date. | D-019 |
 | FR-033 | The system must end the holiday on the day before repayments resume. | D-019 |
 | FR-034 | The system must calculate ordinary interest on outstanding principal only under the initial holiday treatment. | D-020 |
+| FR-035 | The system must apply the platform's existing applicable approval permissions and controls to holiday requests. | D-021 |
 
 | ID | Business rule | Decision |
 | --- | --- | --- |
@@ -91,6 +92,7 @@ The following obligations record confirmed product decisions. The complete capab
 | BR-014 | DPD and penalty pauses include the holiday start and end dates, excluding the resumed repayment date. | D-019 |
 | BR-015 | Unpaid holiday-accrued interest must not earn interest, including after the holiday while it remains unpaid. | D-020 |
 | BR-016 | Ordinary interest must exclude the separate holiday-interest balance from its calculation base. | D-020 |
+| BR-017 | A separate holiday-specific approval workflow is outside the initial release. | D-021 |
 
 Spreading is confirmed. Voluntary holiday payments use current applicable allocation rules (D-017). The mapping of separate holiday interest into those rules, post-holiday component calculation remain unresolved. D-020 confirms no interest on unpaid holiday interest and principal-only ordinary accrual. Do not infer that equal total repayments require equal deferred-interest components.
 
@@ -107,7 +109,7 @@ The following remaining candidates are recommendations for discussion; confirmed
 | P-007 | Apply cancellation before commencement and repeat requests without unintended financial effects. | Q-006/Q-007 |
 | P-008 | Preserve historical records and reproduce agreed outcomes on replay. | Q-004/Q-005; existing platform constraints E-008 |
 
-As remaining decisions are confirmed, promote only unresolved candidate details into additional atomic FR/BR statements, linked to decision IDs. FR-001–FR-034 and BR-001–BR-016 already record confirmed policy. Do not relabel candidates as confirmed merely because a draft is committed.
+As remaining decisions are confirmed, promote only unresolved candidate details into additional atomic FR/BR statements, linked to decision IDs. FR-001–FR-035 and BR-001–BR-017 already record confirmed policy. Do not relabel candidates as confirmed merely because a draft is committed.
 
 ## Business rules and dependencies
 
@@ -175,9 +177,11 @@ Use one fixed source schedule, business date, product snapshot and opening balan
 
 | EX-027 | Outstanding principal is 10,000.00 and separate unpaid holiday interest is 120.00. Rate and accrual date/basis remain unchanged. | Calculate ordinary interest using 10,000.00, not 10,120.00. The 120.00 does not itself earn interest during or after the holiday while unpaid. Exact daily amount uses existing agreed accrual and rounding rules. | Numerical fixture and existing accrual-rule verification |
 
+| EX-028 | Authorised and unauthorised actors attempt to approve the same otherwise valid holiday request. | Apply the existing applicable platform approval controls. Do not introduce a new holiday-specific second-approver requirement or bypass existing controls. Derive expected permissions and responses from verified platform evidence; missing mappings remain blockers. | Q-006 actual permission/control mapping |
+
 Review status: Designed as discussion cases; no application tests executed. DPD examples reflect D-008; financial repayment amounts remain uncalculated and unapproved.
 
 ## Open decisions and readiness
 
-Core scope, separate accrual and repayment-increase policy are confirmed (D-002–D-005). Material details within Q-001–Q-007 remain open. D-006 confirms spreading and equal total repayments with final rounding. D-007 confirms contractual version creation on approval and preservation of the original. D-008 confirms operational DPD pause/resume without a separate total-days measure. D-009 confirms the late-payment penalty pause. D-010 confirms existing penalty retention and prospective resumption without holiday catch-up. D-011 fixes the new version's effective date at holiday commencement. D-012 confirms pre-start cancellation and audit retention. D-013 defers post-start changes/cancellations. D-014 confirms eligibility with existing arrears and separate retention without automatic rescheduling. D-015 confirms the six-month maximum. D-016 confirms one to six consecutive monthly instalments and at least one later repayment by unchanged maturity. D-017 confirms voluntary holiday payments under current applicable allocation rules. D-018 confirms payment-driven balance/forecast updates without automatic contractual recalculation. D-019 confirms inclusive calendar-day pause boundaries ending before repayments resume. D-020 confirms principal-only ordinary interest and no interest on holiday interest. Next resolve business-day/date selection, holiday-interest allocation mapping, collection handling and repayment calculation details. Not ready for engineering.
+Core scope, separate accrual and repayment-increase policy are confirmed (D-002–D-005). Material details within Q-001–Q-007 remain open. D-006 confirms spreading and equal total repayments with final rounding. D-007 confirms contractual version creation on approval and preservation of the original. D-008 confirms operational DPD pause/resume without a separate total-days measure. D-009 confirms the late-payment penalty pause. D-010 confirms existing penalty retention and prospective resumption without holiday catch-up. D-011 fixes the new version's effective date at holiday commencement. D-012 confirms pre-start cancellation and audit retention. D-013 defers post-start changes/cancellations. D-014 confirms eligibility with existing arrears and separate retention without automatic rescheduling. D-015 confirms the six-month maximum. D-016 confirms one to six consecutive monthly instalments and at least one later repayment by unchanged maturity. D-017 confirms voluntary holiday payments under current applicable allocation rules. D-018 confirms payment-driven balance/forecast updates without automatic contractual recalculation. D-019 confirms inclusive calendar-day pause boundaries ending before repayments resume. D-020 confirms principal-only ordinary interest and no interest on holiday interest. D-021 confirms reuse of existing approval controls without a holiday-specific workflow. Next verify actual permissions, business-day/date selection, holiday-interest allocation mapping, collection handling and repayment calculation details. Not ready for engineering.
 Implementation linkage: [implementation.md](implementation.md). Evidence and decision authority: [decisions.md](decisions.md).
