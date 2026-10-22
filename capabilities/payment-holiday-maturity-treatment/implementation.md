@@ -9,7 +9,7 @@ Platform evidence commit SHA: `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`
 
 ## Scope and blockers
 Draft discussion scope only: [requirements.md](requirements.md).
-D-001 confirms the task; D-002–D-022 confirm initial scope and treatment. FR-001–FR-039 and BR-001–BR-017 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
+D-001 confirms the task; D-002–D-023 confirm initial scope and treatment. FR-001–FR-041 and BR-001–BR-017 express those decisions. The full FR/BR set is incomplete and not accepted as an implementation baseline. Remaining candidates and numerical EX outcomes require decisions.
 Blocking questions: Q-001–Q-007 in [decisions.md](decisions.md).
 Do not implement a holiday policy from this draft.
 
@@ -23,7 +23,7 @@ D-020 requires ordinary interest on outstanding principal only and prohibits int
 
 D-021 requires existing applicable approval permissions/controls without a separate holiday-specific workflow. Inspect actual implementation and unresolved auth/maker-checker dependencies. Do not interpret reuse as permission to bypass authorisation or assume dual control exists. Record missing permission mappings as blockers.
 
-D-022 requires a pre-approval operator preview of dates, separate holiday interest, revised repayments and unchanged maturity. Future accrual is projected, not already posted. Preview/approval calculation timing and freshness/conflict handling need resolution before implementation readiness.
+D-022 requires a pre-approval operator preview of dates, separate holiday interest, revised repayments and unchanged maturity. Future accrual is projected, not already posted. D-023 requires refresh after relevant changes and prohibits stale-preview approval. Exact dependency detection, concurrency handling, calculation timing and error contract remain to specify.
 
 ## Existing mappings and constraints
 BHV-008 is the Payment Holiday identifier in the expert backlog, not a locked current graph entry.
@@ -58,7 +58,7 @@ When approved, create the platform execution brief and numbered tickets under .s
 | Calendar-day holiday coverage | EX-026 | D-019 product decision; no executed tests | Inclusive start/end, resumed-date exclusion, variable month lengths and same-day order |
 | Interest base and no compounding | EX-027 | D-020 product decision; no executed tests | Actual accrual, forecast base, repayment of separate holiday interest and numerical fixtures |
 | Approval controls | EX-028 | D-021 product decision; no executed tests | Actual permissions, allowed/rejected actors, missing control dependencies and API/UI consistency |
-| Operator preview | EX-029 | D-022 product decision; no executed tests | Required displayed outputs, projected/posted distinction, calculation baseline and approval consistency |
+| Operator preview | EX-029/030 | D-022/D-023 product decisions; no executed tests | Required displayed outputs, projected/posted distinction, calculation baseline and approval consistency |
 | Replay/regression | EX-006/007 | Existing invariants (E-008) | Fixed baseline fixtures and executed outcomes |
 
 No application tests executed. No delivered acceptance.
