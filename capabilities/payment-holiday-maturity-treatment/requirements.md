@@ -12,7 +12,7 @@ Outcome: Define how a payment holiday changes expected collections, interest and
 
 Confirmed task: Prepare requirements for the recommended capability, using the Loan Domain Expert workflow (D-001).
 
-Confirmed first slice (D-002): One future holiday on a fixed-rate equal-instalments (ANNUITY) loan. Interest accrues separately (D-003). Repayments increase afterwards and the term stays unchanged (D-004). Detailed eligibility and API/operator outputs remain to confirm.
+Confirmed first slice (D-002): One future holiday on a fixed-rate equal-instalments (ANNUITY) loan. Interest accrues separately (D-003). Repayments increase afterwards and the term stays unchanged (D-004). Holiday interest is spread across remaining post-holiday repayments; total repayments are equal, subject to a final rounding adjustment (D-006). Detailed eligibility and API/operator outputs remain to confirm.
 
 Future consideration (D-005): Term extension and final residual-payment policies may be added later. This does not require implementing configuration or alternative strategies now.
 
@@ -41,13 +41,16 @@ The following obligations record confirmed product decisions. The complete capab
 | FR-003 | The system must retain holiday-accrued interest separately from principal. | D-003 |
 | FR-004 | The system must increase repayments after the holiday to recover deferred amounts within the existing term. | D-004; calculation details Q-002/Q-003 |
 | FR-005 | The system must preserve the loan's maturity date when applying this initial holiday treatment. | D-004 |
+| FR-006 | The system must spread holiday-accrued interest across the remaining post-holiday repayments. | D-006 |
+| FR-007 | The system must calculate equal total post-holiday repayments, subject to a final rounding adjustment. | D-006 |
 
 | ID | Business rule | Decision |
 | --- | --- | --- |
 | BR-001 | Holiday interest must not be capitalised into principal under the initial treatment. | D-003 |
 | BR-002 | Term extension and a final residual-payment strategy are outside the initial treatment. | D-004/D-005 |
+| BR-003 | The spreading calculation must retain holiday-accrued interest separately from principal. | D-003/D-006 |
 
-Separate accrual does not yet specify the interest collection order or whether a separately assessed charge is permitted. Do not infer a collection formula or compound-interest policy.
+Spreading is confirmed; the allocation order within each repayment, exact calculation and compound-interest policy remain unresolved. Do not infer that equal total repayments require equal deferred-interest components.
 
 The following remaining candidates are recommendations for discussion; confirmed FR/BR entries above take precedence. They are deliberately non-normative and are not an approved implementation contract.
 
@@ -62,13 +65,13 @@ The following remaining candidates are recommendations for discussion; confirmed
 | P-007 | Apply cancellation before commencement and repeat requests without unintended financial effects. | Q-006/Q-007 |
 | P-008 | Preserve historical records and reproduce agreed outcomes on replay. | Q-004/Q-005; existing platform constraints E-008 |
 
-As remaining decisions are confirmed, promote only unresolved candidate details into additional atomic FR/BR statements, linked to decision IDs. FR-001–FR-005 and BR-001/002 already record confirmed policy. Do not relabel candidates as confirmed merely because a draft is committed.
+As remaining decisions are confirmed, promote only unresolved candidate details into additional atomic FR/BR statements, linked to decision IDs. FR-001–FR-007 and BR-001–BR-003 already record confirmed policy. Do not relabel candidates as confirmed merely because a draft is committed.
 
 ## Business rules and dependencies
 
 Existing constraints to preserve or explicitly reconcile: append-only history; Decimal calculations and ADR-001 rounding/day ordering; schedule layer vocabulary; current event window semantics (inclusive due dates). These are platform evidence, not newly approved product defaults.
 
-Material choices still open: detailed eligibility and scope boundaries; recovery of separately accrued interest; repayment calculation and rounding; configuration owner/default; contractual amendment; arrears handling and exceptions. See [decisions.md](decisions.md).
+Material choices still open: detailed eligibility and scope boundaries; allocation of separately accrued interest within each repayment; exact repayment calculation and rounding precision; configuration owner/default; contractual amendment; arrears handling and exceptions. See [decisions.md](decisions.md).
 
 ## Exceptions to resolve
 
@@ -87,7 +90,7 @@ Use one fixed source schedule, business date, product snapshot and opening balan
 
 | ID | Starting state / action | Expected result | Blocks |
 | --- | --- | --- | --- |
-| EX-001 | Active ANNUITY loan, 12 monthly rows remain, projected opening principal 10,000.00, annual rate 12%; holiday covers next two due dates. | Confirmed: interest accrues separately; principal does not increase from holiday interest; subsequent repayments increase and maturity stays unchanged. Exact amounts and recovery profile remain unresolved. | Q-001–Q-005 |
+| EX-001 | Active ANNUITY loan, 12 monthly rows remain, projected opening principal 10,000.00, annual rate 12%; holiday covers next two due dates. | Confirmed: interest accrues separately; principal does not increase from holiday interest; subsequent repayments increase and maturity stays unchanged. Holiday interest is spread across equal total remaining repayments, with a final rounding adjustment. Exact amounts and component allocation remain unresolved. | Q-001–Q-005 |
 | EX-002 | Same fixture with interest disabled in holiday request. | D-003 requires separate accrual for this initial treatment. Whether an incompatible request is rejected or the field is unavailable remains Q-006; it must not silently select a different policy. | Q-002/Q-005 |
 | EX-003 | Holiday covers the final contractual due date. | No term extension or residual-payment strategy is selected. Decide whether this boundary is ineligible when no recovery dates remain; exact response and modification record remain open. | Q-003/Q-004 |
 | EX-004 | Confirmed future holiday is cancelled before it starts. | Unresolved: resulting schedule, record and repeat-cancellation response. | Q-007 |
@@ -95,9 +98,11 @@ Use one fixed source schedule, business date, product snapshot and opening balan
 | EX-006 | Same confirmed event history is replayed. | Existing constraint INV-004 expects reproducibility; holiday-specific numerical oracle depends on confirmed rules. | Q-002–Q-005 |
 | EX-007 | Ordinary annuity account has no holiday. | Compare pre/post-change outputs at a fixed baseline; no new policy should leak into this control case. Specific regression oracle to capture during implementation. | Confirmed scope and baseline |
 
+| EX-008 | Holiday interest is 120.00 and ten post-holiday repayments remain. | Recover 120.00 across those repayments, separately from principal. Total repayments are equal except for final rounding. Do not assume each deferred-interest component is 12.00 until the allocation rule is agreed. | Q-002/Q-003 exact calculation and allocation |
+
 Review status: Designed as discussion cases; no application tests executed and no numerical outcomes approved.
 
 ## Open decisions and readiness
 
-Core scope, separate accrual and repayment-increase policy are confirmed (D-002–D-005). Material details within Q-001–Q-007 remain open. Next resolve Q-002 interest recovery, Q-003 repayment calculation and Q-004 contractual treatment. Not ready for engineering.
+Core scope, separate accrual and repayment-increase policy are confirmed (D-002–D-005). Material details within Q-001–Q-007 remain open. D-006 confirms spreading and equal total repayments with final rounding. Next resolve Q-004 contractual treatment, then outstanding calculation/allocation and operational details. Not ready for engineering.
 Implementation linkage: [implementation.md](implementation.md). Evidence and decision authority: [decisions.md](decisions.md).
