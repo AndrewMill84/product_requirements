@@ -1,0 +1,40 @@
+# Implementation handoff — PHM-001
+
+Target: https://github.com/AndrewMill84/loan-admin-platform  
+Delivery state: Blocked — product decisions pending  
+Product acceptance of requirements: Not accepted  
+Accepted by / date / scope: None  
+Accepted requirements baseline commit SHA: Not pinned  
+Platform evidence commit SHA: `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`
+
+## Scope and blockers
+Draft discussion scope only: [requirements.md](requirements.md).
+Confirmed task: D-001. No FR/BR set is approved. P-001–P-008 are proposals; EX-001–EX-007 are decision probes.
+Blocking questions: Q-001–Q-007 in [decisions.md](decisions.md).
+Do not implement a holiday policy from this draft.
+
+## Existing mappings and constraints
+BHV-008 is the Payment Holiday identifier in the expert backlog, not a locked current graph entry.
+Relevant existing invariants: INV-001/002/004/006/008/011; INV-005/009 apply to their defined contractual schedule scope. INV-003/007 matter if payment/cash handling is changed.
+No new RULE identifiers have been assigned. Preserve current graph and ADR authority; reconcile the schedule-spec final-row conflict explicitly.
+
+## Likely investigation areas after decisions
+ForecastEngine; ScheduledEvent and arrangement transition; actual COB accrual and ledger treatment; L2 arrears/DPD; schedule versioning; API/UI maturity and repayment outputs.
+These are investigation anchors, not an implementation design or approved file-change list.
+
+## Implementation references
+Platform local spec / tickets: Not created.
+Platform branch / PR / code commit: Not created.
+GitHub issue: None created.
+When approved, create the platform execution brief and numbered tickets under .scratch/<feature-slug>/ using current platform instructions. Reference immutable accepted requirement/decision links instead of copying competing rules.
+
+## Coverage and verification
+| Proposed area | Discussion examples | Existing evidence | Gap |
+| --- | --- | --- | --- |
+| Holiday rows and interest | EX-001/002 | Existing holiday test definitions (E-004) | Actual accrual/ledger and agreed numerical expectations |
+| Maturity and repayment | EX-001/003 | Residual reporting code/ticket (E-003/E-006) | Chosen collection policy, dates and final amount |
+| Cancellation/eligibility | EX-004/005 | Window semantics and existing lifecycle (E-007/E-009) | Accepted exceptions and end-to-end tests |
+| Replay/regression | EX-006/007 | Existing invariants (E-008) | Fixed baseline fixtures and executed outcomes |
+
+No application tests executed. No delivered acceptance.
+After product approval: commit the accepted content, pin its full SHA here in a subsequent commit, recheck platform changes, and map each approved FR/BR to examples, tests and exact delivered commit.
