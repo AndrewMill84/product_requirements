@@ -8,9 +8,7 @@ Platform evidence SHA: `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d`
 
 ## Agreed policy and scope
 
-D-001–D-023 and FR-001–FR-041 / BR-001–BR-017 are the current confirmed record; read [requirements.md](requirements.md) and [decisions.md](decisions.md). No capitalisation, term extension or residual-payment strategy is in the initial treatment. Post-start holiday amendment/cancellation is deferred.
-
-Four product groups R-001–R-004 in [reconciliation-review.md](reconciliation-review.md) still block completeness: exact repayment/component attribution; post-approval projection-versus-actual recovery; collection/old-debt partition and remaining eligibility; general approval permissions. Do not select these in code or infer final acceptance.
+Read the authoritative [scope and confirmed requirements](requirements.md#purpose-and-agreed-scope) and [decision record](decisions.md). Remaining product blockers are listed in [requirements.md](requirements.md#remaining-decisions), with analysis in [reconciliation-review.md](reconciliation-review.md). Do not select unresolved behaviour in code or infer acceptance.
 
 ## Technical delivery work after decisions
 

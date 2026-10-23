@@ -29,6 +29,8 @@ Only confirmed behaviour belongs here. Use stable IDs and decision references.
 Condition → response and observable state effect. To establish.
 
 ## Acceptance examples
+For financial calculations, include independently checked numerical examples: a complete scenario and relevant boundaries/exceptions. Record dates, inputs, conventions, expected amounts and checking method. Expected values from the implementation under test alone are not independent validation. If not applicable, explain briefly.
+
 | ID | Rule / requirement | Starting state | Action | Expected result | Review status |
 | --- | --- | --- | --- | --- | --- |
 

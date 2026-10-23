@@ -1,10 +1,11 @@
 # Checkpoint — Payment-holiday maturity treatment
 
 Last reviewed: 22 October 2026  
+Editorial structure update: 23 October 2026  
 Status: Draft — reconciliation completed; final decisions and acceptance pending
 
 ## Current state
-D-001–D-023 remain confirmed. FR-001–FR-041 and BR-001–BR-017 are preserved. Product direction is settled: separate non-interest-bearing holiday interest, increased equal repayments, unchanged maturity, future-effective contractual version, holiday DPD/penalty pause, old-debt retention, voluntary receipts and fresh operator preview.
+Confirmed policy and scope remain in [requirements.md](requirements.md#purpose-and-agreed-scope), supported by D-001–D-023 in [decisions.md](decisions.md). This editorial update changes no policy, IDs or acceptance status.
 
 ## This review
 Reconciled current code/tests/documents at platform `1878f74d7c2a84392c7c5c2a5c9d702f7c06a36d` against requirements input `ec94bbbf297bcade8d77bf9e7c2eacd7315b5fc0`.

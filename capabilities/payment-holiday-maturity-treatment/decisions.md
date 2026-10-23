@@ -93,3 +93,19 @@ No test execution or runtime validation was performed. The current code is not e
 ## Expert-role application
 
 Applied the actual behaviour-definition skill and Loan Domain Expert prompt in feature mode, using current graph context and requirements instructions. Current graph takes precedence over stale five-invariant prompt summaries. D-001–D-023 are preserved; no Sheet/YAML definition is locked and no platform graph, code or external sheet was modified. Final specification acceptance remains pending.
+
+## Historical candidate disposition
+
+The earlier proposal IDs are retained for traceability, not competing requirements:
+
+| Candidate | Disposition |
+| --- | --- |
+| P-001 | Superseded by FR-025/026/032/033/036; calendar integration is implementation work. |
+| P-002 | Confirmed policy in FR-002/003/034 and BR-001/003/015/016; numerical method still R-001/R-002. |
+| P-003 | Confirmed direction in FR-004–FR-007; exact amounts remain R-001/R-003. |
+| P-004 | Superseded by FR-005/008/009/017/018/039; no revised maturity for initial treatment. |
+| P-005 | Initial residual strategy excluded by BR-002; final clearing/reconciliation remains R-001/R-002. |
+| P-006 | Confirmed FR-010–FR-016/022/023; old-debt/collection boundary still R-003. |
+| P-007 | Confirmed pre-start cancellation FR-019–FR-021; repeat/conflict/error contract is implementation detail under Q-007. |
+| P-008 | Existing append-only/replay constraints E-008 apply; version/replay integration requires implementation. |
+

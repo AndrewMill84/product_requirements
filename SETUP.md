@@ -14,10 +14,10 @@ Ask the requirements agent to read AGENTS.md, project-context.md and shared stan
 The platform's AGENTS.md applies when working there. Running application tests or the UI requires its documented environment; reading source does not require starting the application.
 
 ## First capability
-Copy templates/capability/ to capabilities/<slug>/ and add a row to capabilities/README.md. Describe the outcome and known decisions. Ask the agent to investigate the affected platform areas at a recorded commit and resolve remaining questions with you.
+For a simple change, copy templates/compact-requirements.md to capabilities/<slug>/requirements.md. Otherwise copy templates/capability/ to capabilities/<slug>/. Add a row to capabilities/README.md. Describe the outcome and known decisions. Ask the agent to investigate the affected platform areas at a recorded commit and resolve remaining questions with you.
 
 ## Deliver
-Review requirements and examples. Once Andrew explicitly accepts the defined scope, commit and push that baseline. Record its full SHA in implementation.md in a subsequent commit, then pass the handoff to the implementation agent. A commit cannot contain its own final SHA: pin the earlier accepted content, not a moving main link.
+Review requirements and examples. Once Andrew explicitly accepts the defined scope, commit and push that baseline. Record its full SHA in implementation.md or the compact specification's Implementation section in a subsequent commit, then pass the handoff to the implementation agent. A commit cannot contain its own final SHA: pin the earlier accepted content, not a moving main link.
 Follow standards/delivery-workflow.md for tickets, traceability and verification.
 
 ## Continue across sessions

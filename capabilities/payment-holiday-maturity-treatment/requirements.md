@@ -102,7 +102,7 @@ These statements record confirmed decisions. They are not a complete accepted im
 | BR-016 | Ordinary interest must exclude the separate holiday-interest balance from its calculation base. | D-020 |
 | BR-017 | A separate holiday-specific approval workflow is outside the initial release. | D-021 |
 
-## Remaining decisions and candidate disposition
+## Remaining decisions
 
 | Question | Remaining product issue |
 | --- | --- |
@@ -111,18 +111,7 @@ These statements record confirmed decisions. They are not a complete accepted im
 | Q-001/Q-005/Q-006 — R-003 | Zero deferred scheduled collections, collection of old debt, principal/interest partition and exceptional eligibility. |
 | Q-006 — R-004 | Identify usable general approval authority because current holiday routes do not enforce a permission map. |
 
-The earlier proposal IDs are retained for traceability, not competing requirements:
-
-| Candidate | Disposition |
-| --- | --- |
-| P-001 | Superseded by FR-025/026/032/033/036; calendar integration is implementation work. |
-| P-002 | Confirmed policy in FR-002/003/034 and BR-001/003/015/016; numerical method still R-001/R-002. |
-| P-003 | Confirmed direction in FR-004–FR-007; exact amounts remain R-001/R-003. |
-| P-004 | Superseded by FR-005/008/009/017/018/039; no revised maturity for initial treatment. |
-| P-005 | Initial residual strategy excluded by BR-002; final clearing/reconciliation remains R-001/R-002. |
-| P-006 | Confirmed FR-010–FR-016/022/023; old-debt/collection boundary still R-003. |
-| P-007 | Confirmed pre-start cancellation FR-019–FR-021; repeat/conflict/error contract is implementation detail under Q-007. |
-| P-008 | Existing append-only/replay constraints E-008 apply; version/replay integration requires implementation. |
+Historical P-001–P-008 dispositions are retained in [the decision record](decisions.md#historical-candidate-disposition).
 
 ## Exceptions and observable responses
 
