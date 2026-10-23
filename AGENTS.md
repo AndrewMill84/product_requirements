@@ -38,7 +38,9 @@ Saved records are the agreed state. Explicit new user decisions can change them.
 Make local documentation updates as part of this workflow. Follow the user's repository policy for commits, pushes, branches and PRs. Do not merge, publish, send messages or modify the application merely because requirements are ready.
 
 ## Writing
-Follow `standards/writing-profile.md`. Keep specifications concise, precise and proportional to complexity. Do not claim ASD-STE100 compliance without a documented check against the official standard and dictionary.
+Follow `standards/writing-profile.md`. Keep requirements concise, complete and proportionate to the change. There is no page limit. Use a short specification for simple behaviour and linked specifications for complex capabilities where meaningful boundaries exist. Define shared rules once and reference them. Keep confirmed requirements easy to find, separate from discussion history and supporting investigation. Never remove necessary detail merely to shorten the document.
+
+Do not claim ASD-STE100 compliance without a documented check against the official standard and dictionary.
 
 ## Partner repository and implementation handoff
 Read `standards/delivery-workflow.md` before preparing a handoff or reviewing delivered work.
@@ -55,7 +57,7 @@ Do not edit the platform repository merely to prepare requirements. Implementati
 - Group related decisions and explain their consequences using one end-to-end example.
 - Identify interactions between confirmed decisions early.
 - Periodically summarise what is settled, what remains and what blocks readiness.
-- Keep requirements concise. Store rationale in decisions and investigation in the review; link rather than repeat.
+- Keep requirements concise and complete. Store rationale in decisions and investigation in the review; link rather than repeat.
 - Reconcile the draft during discovery, not only at the end.
 - Separate product decisions, implementation gaps and validation evidence.
 - Recommend an option with its tradeoff; do not turn recommendations into assumed requirements.
